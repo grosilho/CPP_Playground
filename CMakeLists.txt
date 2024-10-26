@@ -69,7 +69,7 @@ target_sources(main PRIVATE main.cpp)
 target_link_libraries(main PRIVATE libLA compiler_flags)
 
 
-if (BUILD_TESTING)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
    enable_testing()
    add_subdirectory(tests)
 endif()
