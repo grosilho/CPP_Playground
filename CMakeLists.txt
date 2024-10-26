@@ -51,6 +51,8 @@
 
 cmake_minimum_required(VERSION 3.28)
 
+option(BUILD_TESTING "Configure the tests: ON/OFF" ON)
+
 project(PracticeCPP 
         VERSION 1.0 
         LANGUAGES CXX
@@ -65,3 +67,9 @@ add_subdirectory(libLA)
 add_executable(main)
 target_sources(main PRIVATE main.cpp)
 target_link_libraries(main PRIVATE libLA compiler_flags)
+
+
+if (BUILD_TESTING)
+   enable_testing()
+   add_subdirectory(tests)
+endif()
