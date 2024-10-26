@@ -49,9 +49,19 @@
 # - For each one think about the include directories, source files, link libraries.
 # - Once the library is build, enable testing.
 
+# Configure command, from build directory:
+# cmake -S .. -B . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install
+# Build command:
+# cmake --build .
+# Test command:
+# ctest
+# Install command:
+# cmake --install . --prefix ./install
+
+
 cmake_minimum_required(VERSION 3.28)
 
-option(BUILD_TESTING "Configure the tests: ON/OFF" ON)
+option(BUILD_TESTING "Configure tests" ON)
 
 project(PracticeCPP 
         VERSION 1.0 
@@ -67,6 +77,8 @@ add_subdirectory(libLA)
 add_executable(main)
 target_sources(main PRIVATE main.cpp)
 target_link_libraries(main PRIVATE libLA compiler_flags)
+
+install(TARGETS main DESTINATION bin)
 
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
