@@ -69,6 +69,7 @@ cmake_minimum_required(VERSION 3.28)
 # Define the options
 option(BUILD_TESTING "Configure tests" ON)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "The installation directory")
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type")
 
 # Define the project
 project(PracticeCPP 
@@ -77,7 +78,18 @@ project(PracticeCPP
         DESCRIPTION "A simple project to practice C++, CMake.")
 
 # add dependencies
+set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/external)
+option(CPM_USE_LOCAL_PACKAGES "Use local packages" ON)
 include(cmake/CPM.cmake)
+
+# CCache
+option(USE_CCACHE "Use ccache to speed up compilation" ON)
+set(CCACHE_OPTIONS "CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store")
+CPMAddPackage(
+  NAME Ccache.cmake
+  GITHUB_REPOSITORY TheLartians/Ccache.cmake
+  VERSION 1.2.5
+)
 
 # Define the compiler flags
 add_library(compiler_flags INTERFACE)

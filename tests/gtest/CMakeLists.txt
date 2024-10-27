@@ -1,6 +1,4 @@
 # Fetch the GoogleTest framework
-set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/external)
-option(CPM_USE_LOCAL_PACKAGES "Use local packages" ON)
 CPMAddPackage(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
