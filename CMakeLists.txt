@@ -61,7 +61,7 @@
 # To package only the install stuff:
 # cpack -G ZIP -C Debug
 # To package everything in the project folder (hence also the source code):
-# cpack --config CPackSourceConfig.cmake
+# cpack --config CPackSourceConfig.cmake 
 
 # Minimum version 3.28, for C++20 modules support
 cmake_minimum_required(VERSION 3.28)
