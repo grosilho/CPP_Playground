@@ -1,19 +1,19 @@
 
-add_library(libLA)
+add_library(${PROJECT_NAME})
 
 # the include directories are different when building and when using the installed version, so we need to specify that
-target_include_directories(libLA
+target_include_directories(${PROJECT_NAME}
                            PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> # when building use this directory
                                   $<INSTALL_INTERFACE:include>) # but for the installed version use this directory
 
-target_link_libraries(libLA PUBLIC compiler_flags)
+target_link_libraries(${PROJECT_NAME} PUBLIC compiler_flags)
 
-target_sources(libLA PRIVATE Matrix.cpp)
+target_sources(${PROJECT_NAME} PRIVATE Matrix.cpp)
 
-set(installable_libs libLA compiler_flags)
+set(installable_libs ${PROJECT_NAME} compiler_flags)
 set(installable_files LA.h Matrix.h)
 install(TARGETS ${installable_libs} 
-        EXPORT libLATargets # export the targets so that it can be used by other projects
+        EXPORT "${PROJECT_NAME}Targets" # export the targets so that it can be used by other projects
         DESTINATION lib)
 install(FILES ${installable_files} 
-        DESTINATION "include/libLA")
+        DESTINATION "include/${PROJECT_NAME}")

@@ -29,7 +29,7 @@ foreach(test ${TestsToRun})
   get_filename_component(TName ${test} NAME_WE)
 
   add_executable(${TName} ${test})
-  target_link_libraries(${TName} PRIVATE libLA GTest::GTest compiler_flags)
+  target_link_libraries(${TName} PRIVATE ${PROJECT_NAME} GTest::GTest compiler_flags)
 
   gtest_discover_tests(${TName})
 
