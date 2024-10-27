@@ -57,31 +57,88 @@
 # ctest
 # Install command:
 # cmake --install . --prefix ./install
+# Package command: Options are optional
+# To package only the install stuff:
+# cpack -G ZIP -C Debug
+# To package everything in the project folder (hence also the source code):
+# cpack --config CPackSourceConfig.cmake
 
-
+# Minimum version 3.28, for C++20 modules support
 cmake_minimum_required(VERSION 3.28)
 
+# Define the options
 option(BUILD_TESTING "Configure tests" ON)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "The installation directory")
 
+# Define the project
 project(PracticeCPP 
         VERSION 1.0 
         LANGUAGES CXX
         DESCRIPTION "A simple project to practice C++, CMake.")
 
+# add dependencies
+include(cmake/CPM.cmake)
+
+# Define the compiler flags
 add_library(compiler_flags INTERFACE)
 target_compile_features(compiler_flags INTERFACE cxx_std_23)
 target_compile_options(compiler_flags INTERFACE "-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused")
 
+# Add subdirectories
 add_subdirectory(libLA)
 
+# Main executable (optional)
 add_executable(main)
 target_sources(main PRIVATE main.cpp)
 target_link_libraries(main PRIVATE libLA compiler_flags)
 
-install(TARGETS main DESTINATION bin)
-
-
+# Configure tests. If the project is the main project and BUILD_TESTING is ON, then enable testing.
+# Hence tests are not configures if we are building the library as part of another project.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
    enable_testing()
    add_subdirectory(tests)
 endif()
+
+# Install rules
+install(TARGETS main DESTINATION bin)
+# Export rules
+# Export the targets so that after installation tey can still be used in other projects
+# So far, in subdirectories, we packaged all the target information to be exported, but we still need to create a *.cmake files that will be used by other projects to find and use this library with find_package()
+# here we export the target information to a file called libLATargets.cmake
+install(EXPORT libLATargets
+        FILE libLATargets.cmake
+        NAMESPACE libLA:: # add a namespace to the targets
+        DESTINATION lib/cmake/libLA
+)
+include(CMakePackageConfigHelpers)
+# create the main config file. It will take the content of the Config.cmake.in file and replace the @PACKAGE_INIT@ with relative paths. The result will be saved in libLAConfig.cmake file.
+# Config.cmake.in contains a reference to the target's *.cmake files. This info will be copied in the main config file.
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+                                "${CMAKE_CURRENT_BINARY_DIR}/libLAConfig.cmake"
+                                INSTALL_DESTINATION "lib/cmake/libLA" 
+                                NO_SET_AND_CHECK_MACRO
+                                NO_CHECK_REQUIRED_COMPONENTS_MACRO
+                                )
+# create the version file. It will take the version from the project and save it in libLAConfigVersion.cmake file. It provides information about compatibility with the requested version from the other projects.
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/libLAConfigVersion.cmake"
+                                 VERSION "${PracticeCPP_VERSION_MAJOR}.${PracticeCPP_VERSION_MINOR}"
+                                 COMPATIBILITY AnyNewerVersion
+                                 )                        
+# install the config files
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libLAConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/libLAConfigVersion.cmake
+        DESTINATION lib/cmake/libLA
+        )
+# So far we generated info that can be used by the installed library. 
+# To use it from a build directory we need to generate libLATargets.cmake in the build directory so that it can be used by the libLAConfig.cmake file there.
+export(EXPORT libLATargets
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/libLATargets.cmake"
+        )
+# Packaging rules
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PracticeCPP_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PracticeCPP_VERSION_MINOR}")
+set(CPACK_GENERATOR "TGZ")
+set(CPACK_SOURCE_GENERATOR "TGZ")
+include(CPack)

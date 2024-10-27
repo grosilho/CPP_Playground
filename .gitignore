@@ -32,7 +32,8 @@
 *.app
 
 # Folders
-build/
+build/*
+external/*
 
 # MacOS files
 .DS_Store

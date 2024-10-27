@@ -1,11 +1,12 @@
 # Fetch the GoogleTest framework
-include(FetchContent)
-FetchContent_Declare(
+set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/external)
+option(CPM_USE_LOCAL_PACKAGES "Use local packages" ON)
+CPMAddPackage(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG        v1.15.2 
 )
-FetchContent_MakeAvailable(googletest)
+
 add_library(GTest::GTest INTERFACE IMPORTED)
 target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
