@@ -5,13 +5,15 @@
             "name": "default",
             "displayName": "Default Config for library",        
             "generator": "Ninja",
-            "binaryDir": "${fileDir}/build/LinAlg"
+            "binaryDir": "${fileDir}/build/Linlg",
+            "installDir": "${fileDir}/install"
         },
         {
             "name": "release",
             "displayName": "Release Config for library",        
             "inherits": "default",
             "binaryDir": "${fileDir}/build/LinAlg_Release",
+            "installDir": "${fileDir}/install_Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
@@ -21,6 +23,7 @@
             "displayName": "Debug Config for library",        
             "inherits": "default",
             "binaryDir": "${fileDir}/build/LinAlg_Debug",
+            "installDir": "${fileDir}/install_Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }

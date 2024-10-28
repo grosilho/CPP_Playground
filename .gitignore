@@ -34,6 +34,8 @@
 # Folders
 build/*
 external/*
+install/*
+install_*/*
 
 # MacOS files
 .DS_Store

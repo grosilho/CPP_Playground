@@ -1,3 +1,13 @@
 @PACKAGE_INIT@
 
-include("${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake")
+# Keep updated the libray name! Here we cannot use variables, they will not be expanded.
+include("${CMAKE_CURRENT_LIST_DIR}/LinAlgTargets.cmake")
+
+check_required_components(LinAlg)
+
+# If the library has third party dependencies, they must be added here as well
+# See Creating a Package Configuration File in https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
+# 
+# Example
+# include(CMakeFindDependencyMacro)
+# find_dependency(Stats 2.6.4)
