@@ -1,0 +1,67 @@
+{
+    "version": 9,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config for library",        
+            "generator": "Ninja",
+            "binaryDir": "${fileDir}/build/LinAlg"
+        },
+        {
+            "name": "release",
+            "displayName": "Release Config for library",        
+            "inherits": "default",
+            "binaryDir": "${fileDir}/build/LinAlg_Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug Config for library",        
+            "inherits": "default",
+            "binaryDir": "${fileDir}/build/LinAlg_Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        }
+    ],
+    "workflowPresets": [
+        {
+        "name": "release",
+        "steps": [
+            {
+            "type": "configure",
+            "name": "release"
+            },
+            {
+            "type": "build",
+            "name": "release"
+            }
+        ]
+        },
+        {
+        "name": "debug",
+        "steps": [
+            {
+            "type": "configure",
+            "name": "debug"
+            },
+            {
+            "type": "build",
+            "name": "debug"
+            }
+        ]
+        }
+    ]
+  }

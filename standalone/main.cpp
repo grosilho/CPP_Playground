@@ -1,10 +1,9 @@
-#include <libLA/LA.h>
+#include <LinAlg/LinAlg.hpp>
 
 #include <iostream>
 
 int main()
 {
-    Matrix m;
-
+    [[maybe_unused]] int x = multiply(1, 2);
     std::cout << "Compilation test passed" << std::endl;
 }

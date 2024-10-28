@@ -1,2 +1,2 @@
 # Install rules ------------------------------------------------------------------------------
-install(TARGETS main DESTINATION bin)
+# install(TARGETS main DESTINATION bin)

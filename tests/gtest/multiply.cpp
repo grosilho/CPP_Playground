@@ -1,4 +1,4 @@
-#include <libLA/LA.h>
+#include <LinAlg/LinAlg.hpp>
 #include <gtest/gtest.h>
 
 TEST(MultiplyTests, TestIntegerOne_One)

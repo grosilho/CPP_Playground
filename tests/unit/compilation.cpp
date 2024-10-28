@@ -1,8 +1,8 @@
-#include <libLA/LA.h>
+#include <LinAlg/LinAlg.hpp>
 
 int compilation(int, char **)
 {
-    Matrix m;
+    [[maybe_unused]] int x = multiply(1, 2);
 
     return 0;
 }
