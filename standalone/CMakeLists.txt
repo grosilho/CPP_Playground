@@ -15,6 +15,6 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
 CPMAddPackage(NAME LinAlg SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
 
-# Add subdirectories
+# Add executable
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE LinAlg compiler_flags)

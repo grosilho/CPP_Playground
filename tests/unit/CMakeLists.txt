@@ -18,7 +18,7 @@ create_test_sourcelist(Tests RunTests.cpp ${TestsToRun})
 # add the executable compiling all tests
 add_executable(RunTests)
 target_sources(RunTests PRIVATE ${Tests})
-target_link_libraries(RunTests PRIVATE ${PROJECT_NAME} compiler_flags)
+target_link_libraries(RunTests PRIVATE LinAlg compiler_flags)
 
 # Add a test for each test in the list
 foreach(test ${TestsToRun})
