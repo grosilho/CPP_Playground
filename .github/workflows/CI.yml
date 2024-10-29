@@ -47,6 +47,7 @@ jobs:
     - uses: codecov/codecov-action@v3
       with:
         files: ${{github.workspace}}/coverage.info
+        token: ${{secrets.CODECOV_TOKEN}}
         flags: unittests # optional
         name: cachegrand-server
         fail_ci_if_error: false
