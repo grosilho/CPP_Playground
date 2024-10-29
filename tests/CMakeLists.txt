@@ -19,7 +19,6 @@ option(TEST_COVERAGE_ONLY_LIBRARY "Only test the library" ON)
 
 # Import dependencies -------------------------------------------------------------------
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
-CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
 if(ENABLE_TEST_COVERAGE)
     include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CodeCoverage.cmake)
 endif()

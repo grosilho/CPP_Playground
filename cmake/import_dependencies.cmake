@@ -16,3 +16,5 @@ CPMAddPackage(
   GITHUB_REPOSITORY TheLartians/Ccache.cmake
   VERSION 1.2.5
 )
+
+CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
