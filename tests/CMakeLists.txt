@@ -20,7 +20,7 @@ endif()
 # Options
 # -------------------------------------------------------------------------------
 option(ENABLE_TEST_COVERAGE "Enable test coverage" ON)
-option(TEST_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" OFF)
+option(TEST_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" ON)
 
 # Import dependencies
 # -------------------------------------------------------------------
