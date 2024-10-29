@@ -91,8 +91,3 @@ export(EXPORT ${PROJECT_NAME}Targets
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_library(${PROJECT_NAME}::compiler_flags ALIAS compiler_flags)
 # ---------------------------------------------------------------------------------------
-
-# Install, export and packing -----------------------------------------------------------
-# include(${CMAKE_CURRENT_LIST_DIR}/cmake/run_install.cmake)
-# include(${CMAKE_CURRENT_LIST_DIR}/cmake/run_export.cmake)
-# include(${CMAKE_CURRENT_LIST_DIR}/cmake/run_packing.cmake)
