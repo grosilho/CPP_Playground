@@ -5,7 +5,7 @@ on: push
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   build:
@@ -14,13 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Configure CMake
-      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
-      run: ctest
+    - name: Configure, Build, and Tests
+      working-directory: ${{github.workspace}}/tests
+      run: cmake --workflow --preset ${{env.BUILD_TYPE}}

@@ -1,3 +1,8 @@
+# Instructions: 1) conf, build, run tests 2) generate coverage report 3) generate html version
+# cmake --workflow --preset debug
+# lcov -c -d ../build/tests_Debug -o ../build/tests_Debug/main_coverage.info
+# genhtml ../build/tests_Debug/main_coverage.info --output-directory ../coverage_html
+
 # Minimum version 3.28, for C++20 modules support
 cmake_minimum_required(VERSION 3.28)
 
@@ -10,28 +15,22 @@ endif()
 
 # Options -------------------------------------------------------------------------------
 option(ENABLE_TEST_COVERAGE "Enable test coverage" ON)
-option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
+option(TEST_COVERAGE_ONLY_LIBRARY "Only test the library" ON)
 
 # Import dependencies -------------------------------------------------------------------
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
-
-# Add library ---------------------------------------------------------------------------
-if(TEST_INSTALLED_VERSION)
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR}/../install_${CMAKE_BUILD_TYPE})
-    find_package(LinAlg REQUIRED)
-    if(ENABLE_TEST_COVERAGE)
-        target_compile_options(LinAlg::compiler_flags INTERFACE -O0 -g -fprofile-arcs -ftest-coverage)
-        target_link_options(LinAlg::compiler_flags INTERFACE -fprofile-arcs -ftest-coverage)
-    endif()
-else()
-    CPMAddPackage(NAME LinAlg SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-    if(ENABLE_TEST_COVERAGE)
-        target_compile_options(compiler_flags INTERFACE -O0 -g -fprofile-arcs -ftest-coverage)
-        target_link_options(compiler_flags INTERFACE -fprofile-arcs -ftest-coverage)
-    endif()
+if(ENABLE_TEST_COVERAGE)
+    include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CodeCoverage.cmake)
 endif()
 
+# Add library ---------------------------------------------------------------------------
+CPMAddPackage(NAME LinAlg SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
+if(ENABLE_TEST_COVERAGE AND TEST_COVERAGE_ONLY_LIBRARY)        
+    append_coverage_compiler_flags_to_target(LinAlg)
+elseif(ENABLE_TEST_COVERAGE) # test everything that is compiled
+    append_coverage_compiler_flags()
+endif()
 
 enable_testing()
 

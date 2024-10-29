@@ -9,7 +9,7 @@
             "installDir": "${fileDir}/install"
         },
         {
-            "name": "release",
+            "name": "Release",
             "displayName": "Release Config for library",        
             "inherits": "default",
             "binaryDir": "${fileDir}/build/LinAlg_Release",
@@ -19,7 +19,7 @@
             }
         },
         {
-            "name": "debug",
+            "name": "Debug",
             "displayName": "Debug Config for library",        
             "inherits": "default",
             "binaryDir": "${fileDir}/build/LinAlg_Debug",
@@ -31,38 +31,38 @@
     ],
     "buildPresets": [
         {
-            "name": "release",
-            "configurePreset": "release"
+            "name": "Release",
+            "configurePreset": "Release"
         },
         {
-            "name": "debug",
-            "configurePreset": "debug"
+            "name": "Debug",
+            "configurePreset": "Debug"
         }
     ],
     "workflowPresets": [
         {
-        "name": "release",
+        "name": "Release",
         "steps": [
             {
             "type": "configure",
-            "name": "release"
+            "name": "Release"
             },
             {
             "type": "build",
-            "name": "release"
+            "name": "Release"
             }
         ]
         },
         {
-        "name": "debug",
+        "name": "Debug",
         "steps": [
             {
             "type": "configure",
-            "name": "debug"
+            "name": "Debug"
             },
             {
             "type": "build",
-            "name": "debug"
+            "name": "Debug"
             }
         ]
         }
