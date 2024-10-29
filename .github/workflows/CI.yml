@@ -14,6 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Configure, Build, and Tests
-      working-directory: ${{github.workspace}}/tests
-      run: cmake --workflow --preset ${{env.BUILD_TYPE}}
+    - name: Configure
+      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
+      run: ctest
