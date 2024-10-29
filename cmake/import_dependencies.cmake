@@ -17,4 +17,7 @@ CPMAddPackage(
   VERSION 1.2.5
 )
 
+# Code formatting
+# Check https://github.com/TheLartians/Format.cmake for usage
+# Basically, it adds targets to format and check the code
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
