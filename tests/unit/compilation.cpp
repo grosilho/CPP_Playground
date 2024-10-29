@@ -2,7 +2,7 @@
 
 int compilation(int, char **)
 {
-    [[maybe_unused]] int x = multiply(1, 2);
+  [[maybe_unused]] int x = multiply(1, 2);
 
-    return 0;
+  return 0;
 }
