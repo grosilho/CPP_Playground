@@ -6,6 +6,7 @@ endif()
 # CPM
 set(ENV{CPM_SOURCE_CACHE} ${CMAKE_CURRENT_LIST_DIR}/../external)
 option(CPM_USE_LOCAL_PACKAGES "Use local packages" ON)
+option(CPM_LOCAL_PACKAGES_ONLY "Use only local packages" ON)
 include(${CMAKE_CURRENT_LIST_DIR}/CPM.cmake)
 
 # CCache
