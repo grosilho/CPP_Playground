@@ -42,7 +42,7 @@ jobs:
       with:
         files: "${{env.CCACHE_DIR}}/ccache"
 
-    - if: ${{ steps.check_ccache_exe.outputs.files_exists}} != 'true'
+    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
       name: Download Ccache executable
       id: ccache
       shell: cmake -P {0}
