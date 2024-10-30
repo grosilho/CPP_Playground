@@ -10,7 +10,7 @@ env:
   CPM_SOURCE_CACHE: ./external
 
   CCACHE_VERSION: 4.6
-  CCACHE_BASEDIR: ./
+  CCACHE_BASEDIR: ${{github.workspace}}
   CCACHE_DIR: ./.ccache
   CCACHE_COMPRESS: true
   CCACHE_COMPRESSLEVEL: 5
