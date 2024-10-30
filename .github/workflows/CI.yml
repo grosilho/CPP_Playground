@@ -14,14 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up CPM cache
-      id: cache-cpm
-      uses: actions/cache@v2
-      with:
-        path: ~/external
-        key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
-        restore-keys: |
-          ${{ runner.os }}-cpm-
+    - name: CPM Cache
+      uses: actions/cache@v3
+      with:        
+        path: ./external
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./external/*') }}
 
     - name: Configure
       run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
