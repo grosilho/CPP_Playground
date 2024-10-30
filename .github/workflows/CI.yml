@@ -51,7 +51,7 @@ jobs:
         file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
     
-    - if: ${{ steps.check_ccache_exe.outputs.files_exists}} != 'true'
+    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
       name: Move ccache executable to ccache directory
       run: mkdir -p ${{env.CCACHE_DIR}} && mv ccache ${{env.CCACHE_DIR}}/ccache
 
