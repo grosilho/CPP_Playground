@@ -30,21 +30,31 @@ jobs:
         key: ${{ runner.os }}-cpm-cache
 
     - name: Load Ccache cache
+      id: ccache-cache
       uses: actions/cache@v3
       with:
         path: ${{env.CCACHE_DIR}}
         key: ${{ runner.os }}-ccache-cache
 
-    - name: Download Ccache executable
+    - name: Check ccache executable
+      id: check_ccache_exe
+      uses: andstor/file-existence-action@v3
+      with:
+        files: "${{env.CCACHE_DIR}}/ccache"
+
+    - if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' }} || ${{ steps.check_ccache_exe.outputs.files_exists != 'true' }}
+      name: Download Ccache executable
       id: ccache
       shell: cmake -P {0}
       run: |
-        set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${ { runner.os } }.tar.xz")
+        set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${{ runner.os }}.tar.xz")
         file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{env.CCACHE_DIR}})
+        execute_process(COMMAND ${CMAKE_COMMAND} -E copy ccache ${{env.CCACHE_DIR}})
     
     - name: Add ccache's executable path to PATH
-      run: echo "$(pwd)" >> $GITHUB_PATH    
+      run: echo "${{env.CCACHE_DIR}}" >> $GITHUB_PATH    
 
     - name: Configure
       run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
