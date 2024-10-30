@@ -7,14 +7,14 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Debug
 
-  # CPM_SOURCE_CACHE: ./external
+  CPM_SOURCE_CACHE: ./external
 
-  # CCACHE_VERSION: 4.6
-  # CCACHE_BASEDIR: ${GITHUB_WORKSPACE}
-  # CCACHE_DIR: ${GITHUB_WORKSPACE}/.ccache
-  # CCACHE_COMPRESS: true
-  # CCACHE_COMPRESSLEVEL: 5
-  # CCACHE_MAXSIZE: 500M
+  CCACHE_VERSION: 4.6
+  CCACHE_BASEDIR: ${GITHUB_WORKSPACE}
+  CCACHE_DIR: ${GITHUB_WORKSPACE}/.ccache
+  CCACHE_COMPRESS: true
+  CCACHE_COMPRESSLEVEL: 5
+  CCACHE_MAXSIZE: 500M
 
 jobs:
   build:
@@ -23,31 +23,28 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # - name: Load CPM Cache
-    #   uses: actions/cache@v3
-    #   with:        
-    #     path: ./external
+    - name: Load CPM Cache
+      uses: actions/cache@v3
+      with:        
+        path: ${{env.CPM_SOURCE_CACHE}}
+        key: ${{ runner.os }}-cpm-cache
 
-    #     # key: ${{ runner.os }}-cpm-cache
-    #     key: ubuntu-cpm-cache
+    - name: Load Ccache cache
+      uses: actions/cache@v3
+      with:
+        path: ${{env.CCACHE_DIR}}
+        key: ${{ runner.os }}-ccache-cache
 
-    # - name: Load Ccache cache
-    #   id: ccache_cache
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: /.ccache
-    #     key: ${{ runner.os }}-ccache-cache
-
-    # - name: Download Ccache executable
-    #   id: ccache
-    #   shell: cmake -P {0}
-    #   run: |
-    #     set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${ { runner.os } }.tar.xz")
-    #     file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
-    #     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
+    - name: Download Ccache executable
+      id: ccache
+      shell: cmake -P {0}
+      run: |
+        set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${ { runner.os } }.tar.xz")
+        file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
     
-    # - name: Add ccache's executable path to PATH
-    #   run: echo "$(pwd)" >> $GITHUB_PATH    
+    - name: Add ccache's executable path to PATH
+      run: echo "$(pwd)" >> $GITHUB_PATH    
 
     - name: Configure
       run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -59,14 +56,14 @@ jobs:
       working-directory: ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
       run: ctest
 
-    # - name: Code coverage report generation
-    #   uses: danielealbano/lcov-action@v3
-    #   with:
-    #     gcov_path: /usr/bin/gcov-9
-    #     remove_patterns: 3rdparty,tests
+    - name: Code coverage report generation
+      uses: danielealbano/lcov-action@v3
+      with:
+        gcov_path: /usr/bin/gcov-9
+        remove_patterns: 3rdparty,tests
 
-    # - name: Upload results to Codecov
-    #   uses: codecov/codecov-action@v4      
-    #   with:
-    #     files: ${{github.workspace}}/coverage.info
-    #     token: ${{secrets.CODECOV_TOKEN}}
+    - name: Upload results to Codecov
+      uses: codecov/codecov-action@v4      
+      with:
+        files: ${{github.workspace}}/coverage.info
+        token: ${{secrets.CODECOV_TOKEN}}
