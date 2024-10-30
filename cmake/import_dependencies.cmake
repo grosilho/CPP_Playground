@@ -3,10 +3,18 @@ if(NOT PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   return()
 endif()
 
+
+# Helpful for debugging
+# include(CMakePrintHelpers)
+# cmake_print_variables(MY_VARIABLE)
+
 # CPM
-set(ENV{CPM_SOURCE_CACHE} ${CMAKE_CURRENT_LIST_DIR}/../external)
+# Set the cache directory for CPM. First time you run look for a package it will download it in 
+# the cache. Next time you run cmake, it will use the version found in the cache.
+set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_LIST_DIR}/../external" CACHE STRING "The cache directory for CPM")
+# Set to ON to first look for already installed package with find_package. If not found, then look
+# in the cache directory. If not found, then download it.
 option(CPM_USE_LOCAL_PACKAGES "Use local packages" ON)
-option(CPM_LOCAL_PACKAGES_ONLY "Use only local packages" ON)
 include(${CMAKE_CURRENT_LIST_DIR}/CPM.cmake)
 
 # CCache

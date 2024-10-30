@@ -14,7 +14,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(
     FATAL_ERROR
       "In-source builds not allowed. Please use a build directory and run CMake from there."
-  )
+      )
 endif()
 
 # Define the compiler flags
@@ -66,11 +66,11 @@ install(
   TARGETS ${installable_targets}
   EXPORT ${PROJECT_NAME}Targets # this is the name of the export var. containing info to reuse the
                                 # targets in other projects
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
   INCLUDES
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 install(FILES ${installable_files} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 
@@ -80,16 +80,16 @@ install(
   EXPORT ${PROJECT_NAME}Targets
   FILE ${PROJECT_NAME}Targets.cmake
   NAMESPACE ${PROJECT_NAME}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
 # To use the above created file in other projects we need to know where it is. We can create a
 # Config.cmake instructing CMake where to find it ------------------------------ Generate a
 # configuration file in the build directory. Also, tell him where it will be installed
 include(CMakePackageConfigHelpers) # helper functions to create configuration files
 configure_package_config_file(
-  ${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in
+  "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
 # Generate a version file. This file will contain the version of the project. It provides
 # information about compatibility with the requested version from the other projects ----
@@ -102,7 +102,7 @@ write_basic_package_version_file(
 # the configuration file will perform the include of the above targets file
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
 # The next is to make available the targets when building this project as dependency of another one.
 # Hence without installing first

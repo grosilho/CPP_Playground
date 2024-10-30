@@ -19,22 +19,22 @@ endif()
 
 # Options
 # -------------------------------------------------------------------------------
-option(ENABLE_TEST_COVERAGE "Enable test coverage" ON)
-option(TEST_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" ON)
+option(ENABLE_CODE_COVERAGE "Enable code coverage" ON)
+option(CODE_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" ON)
 
 # Import dependencies
 # -------------------------------------------------------------------
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
-if(ENABLE_TEST_COVERAGE)
+if(ENABLE_CODE_COVERAGE)
   include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CodeCoverage.cmake)
 endif()
 
 # Add library
 # ---------------------------------------------------------------------------
 CPMAddPackage(NAME LinAlg SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-if(ENABLE_TEST_COVERAGE AND TEST_COVERAGE_ONLY_LIBRARY)
+if(ENABLE_CODE_COVERAGE AND CODE_COVERAGE_ONLY_LIBRARY)
   append_coverage_compiler_flags_to_target(LinAlg)
-elseif(ENABLE_TEST_COVERAGE) # test everything that is compiled
+elseif(ENABLE_CODE_COVERAGE) # test everything that is compiled
   append_coverage_compiler_flags()
 endif()
 
