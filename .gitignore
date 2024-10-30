@@ -37,6 +37,7 @@ external/*
 install/*
 install_*/*
 coverage_html
+doc/build
 
 # MacOS files
 .DS_Store

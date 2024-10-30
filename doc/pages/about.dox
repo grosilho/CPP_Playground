@@ -1,0 +1,5 @@
+/** @page about About
+  @section doc LinAlg Documentation 
+  This is the auto-generated documentation for the initial project of the LinAlg.
+  It shows how we can use Doxygen to automatically build a browsable documentation for your projects.
+*/

@@ -1,0 +1,32 @@
+{
+    "version": 9,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Configure documentaion",        
+            "binaryDir": "${fileDir}/build"
+        }        
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "targets": "GenerateDocs"
+        }
+    ],
+    "workflowPresets": [
+        {
+        "name": "default",
+        "steps": [
+            {
+            "type": "configure",
+            "name": "default"
+            },
+            {
+            "type": "build",
+            "name": "default"
+            }
+        ]
+        }
+    ]
+  }
