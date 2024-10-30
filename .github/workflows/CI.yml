@@ -50,9 +50,11 @@ jobs:
         set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${{ runner.os }}.tar.xz")
         file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{env.CCACHE_DIR}})
-        execute_process(COMMAND ${CMAKE_COMMAND} -E copy ccache ${{env.CCACHE_DIR}})
     
+    - if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' }} || ${{ steps.check_ccache_exe.outputs.files_exists != 'true' }}
+      name: Move ccache executable to ccache directory
+      run: mkdir -p ${{env.CCACHE_DIR}} && mv ccache ${{env.CCACHE_DIR}}/ccache
+
     - name: Add ccache's executable path to PATH
       run: echo "${{env.CCACHE_DIR}}" >> $GITHUB_PATH    
 
