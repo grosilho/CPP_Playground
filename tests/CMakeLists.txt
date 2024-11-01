@@ -26,6 +26,7 @@ option(CODE_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" OFF)
 # -------------------------------------------------------------------
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
 if(ENABLE_CODE_COVERAGE)
+  set(COVERAGE_EXCLUDES "${CMAKE_CURRENT_LIST_DIR}")
   include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CodeCoverage.cmake)
 endif()
 
