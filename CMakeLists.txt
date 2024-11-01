@@ -40,7 +40,7 @@ target_include_directories(
          $<INSTALL_INTERFACE:include>
 ) # but for the installed version use this directory
 
-target_link_libraries(${PROJECT_NAME} PUBLIC compiler_flags)
+target_link_libraries(${PROJECT_NAME} PUBLIC compiler_flags std::mdspan)
 
 file(
   GLOB_RECURSE headers

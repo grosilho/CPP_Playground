@@ -1,15 +1,17 @@
 ---
-  BasedOnStyle: Google
+  BasedOnStyle: GNU
   AccessModifierOffset: '-2'
   AlignTrailingComments: 'true'
+  AlignAfterOpenBracket: Align
+  AlignOperands: Align
   AllowAllParametersOfDeclarationOnNextLine: 'false'
   AlwaysBreakTemplateDeclarations: 'No'
   BreakBeforeBraces: Linux
-  ColumnLimit: '100'
+  ColumnLimit: '130'
   ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
   IncludeBlocks: Regroup
   IndentPPDirectives: AfterHash
-  IndentWidth: '2'
+  IndentWidth: '4'
   NamespaceIndentation: All
   BreakBeforeBinaryOperators: All
   BreakBeforeTernaryOperators: 'true'

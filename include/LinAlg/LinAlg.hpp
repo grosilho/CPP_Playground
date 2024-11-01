@@ -1,2 +1,1 @@
-
-#include <LinAlg/Math.hpp>
+#include <LinAlg/Matrix.hpp>
