@@ -20,7 +20,7 @@ endif()
 # Options
 # -------------------------------------------------------------------------------
 option(ENABLE_CODE_COVERAGE "Enable code coverage" ON)
-option(CODE_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" OFF)
+option(CODE_COVERAGE_ONLY_LIBRARY "Only code coverage on the library" ON)
 
 # Import dependencies
 # -------------------------------------------------------------------
