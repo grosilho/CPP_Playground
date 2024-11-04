@@ -1,8 +1,10 @@
-#include <LinAlg/LinAlg.hpp>
 #include <iostream>
 
-int main()
+import LinAlg;
+
+int
+main ()
 {
-  [[maybe_unused]] int x = multiply(1, 2);
-  std::cout << "Compilation test passed" << std::endl;
+    [[maybe_unused]] LinAlg::Matrix<double> m (3, 3);
+    std::cout << "Compilation test passed" << std::endl;
 }

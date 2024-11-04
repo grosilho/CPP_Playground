@@ -64,6 +64,9 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "format": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "*.mpp": "cpp",
+        "span": "cpp",
+        "chrono": "cpp"
     }
 }

@@ -1,0 +1,2 @@
+export module LinAlg;
+export import LinAlg.Matrix;

@@ -1,5 +1,6 @@
-#include <LinAlg/LinAlg.hpp>
 #include <gtest/gtest.h>
+
+import LinAlg;
 
 TEST (MatrixTests, size_1)
 {

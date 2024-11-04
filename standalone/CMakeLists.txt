@@ -23,7 +23,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
 # Add executable
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
 
-set(LOADING_METHOD "1" CACHE STRING "Method to load LinAlg project")
+set(LOADING_METHOD "4" CACHE STRING "Method to load LinAlg project")
 
 # Here we list different options to load the LinAlg project. 
 # Option 1 and 2: First try to find an installed version of LinAlg. If it doesnt, build LinAlg as

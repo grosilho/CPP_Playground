@@ -1,5 +1,7 @@
-#include <LinAlg/LinAlg.hpp>
 #include <cassert>
+
+import LinAlg;
+
 int
 matrix_size (int, char **)
 {

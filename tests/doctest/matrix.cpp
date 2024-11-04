@@ -1,6 +1,7 @@
-#include <LinAlg/LinAlg.hpp>
 #include <doctest/doctest.h>
 #include <string>
+
+import LinAlg;
 
 TEST_CASE ("matrix_size_1")
 {
