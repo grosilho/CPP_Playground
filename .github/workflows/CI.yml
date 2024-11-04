@@ -22,6 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Load CPM Cache
       uses: actions/cache@v3
@@ -59,7 +60,7 @@ jobs:
       run: echo "${{env.CCACHE_DIR}}" >> $GITHUB_PATH    
 
     - name: Configure
-      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -GNinja
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
