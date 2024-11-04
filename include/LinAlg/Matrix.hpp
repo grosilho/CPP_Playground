@@ -9,7 +9,7 @@ namespace LinAlg
 
     namespace stdex = std::experimental;
 
-    class Matrix
+    template <typename T> class Matrix
     {
       public:
         Matrix (int rows, int cols);
@@ -22,8 +22,8 @@ namespace LinAlg
       private:
         std::size_t m_rows;
         std::size_t m_cols;
-        std::unique_ptr<double> m_data;
-        stdex::mdspan<double, stdex::dextents<int, 2> > m_matrix;
+        std::unique_ptr<T> m_data;
+        stdex::mdspan<T, stdex::dextents<int, 2> > m_matrix;
     };
 
 }

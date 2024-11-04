@@ -10,28 +10,34 @@ namespace LinAlg
      * @param rows
      * @param cols
      */
-    Matrix::Matrix (int rows, int cols) : m_rows (rows), m_cols (cols), m_data (std::make_unique<double> (rows * cols))
+    template <typename T> Matrix<T>::Matrix (int rows, int cols)
+        : m_rows (rows), m_cols (cols), m_data (std::make_unique<T> (rows * cols))
     {
-        m_matrix = stdex::mdspan<double, stdex::dextents<int, 2> > (m_data.get (), rows, cols);
+        m_matrix = stdex::mdspan<T, stdex::dextents<int, 2> > (m_data.get (), rows, cols);
     }
 
-    Matrix::~Matrix () = default;
+    template <typename T> Matrix<T>::~Matrix () = default;
 
-    std::pair<std::size_t, std::size_t>
-    Matrix::size () const
+    template <typename T> std::pair<std::size_t, std::size_t>
+    Matrix<T>::size () const
     {
         return std::make_pair (m_rows, m_cols);
     }
 
-    std::size_t
-    Matrix::cols () const
+    template <typename T> std::size_t
+    Matrix<T>::cols () const
     {
         return m_cols;
     }
 
-    std::size_t
-    Matrix::rows () const
+    template <typename T> std::size_t
+    Matrix<T>::rows () const
     {
         return m_rows;
     }
+
+    /**
+     * Explicitly instantiate the Matrix<double> class.
+     */
+    template class Matrix<double>;
 }
