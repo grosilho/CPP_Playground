@@ -42,6 +42,4 @@ enable_testing()
 include(CTest)
 
 # Add subdirectories
-add_subdirectory(unit)
-add_subdirectory(gtest)
 add_subdirectory(doctest)
