@@ -60,7 +60,7 @@ jobs:
         run: ${{env.DOCKER_CONDA_RUN}} "cmake --build build/tests"
 
       - name: Run tests
-        run: ${{env.DOCKER_CONDA_RUN}} "cd build/tests && ctest"
+        run: ${{env.DOCKER_CONDA_RUN}} "cd build/tests && ctest -D Experimental"
 
       - name: Print ccache stats
         run: ${{env.DOCKER_CONDA_RUN}} "ccache -s -v"
