@@ -39,6 +39,7 @@ elseif(ENABLE_CODE_COVERAGE) # test everything that is compiled
 endif()
 
 enable_testing()
+include(CTest)
 
 # Add subdirectories
 add_subdirectory(unit)
