@@ -1,89 +1,78 @@
+name: Docker CI
 
-name: Configure, Build, and Test
-
-on: push
+on:
+  push:
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
-
-  CPM_SOURCE_CACHE: ./external
-
-  CCACHE_VERSION: 4.6
-  CCACHE_BASEDIR: ${{github.workspace}}
-  CCACHE_DIR: ./.ccache
-  CCACHE_COMPRESS: true
-  CCACHE_COMPRESSLEVEL: 5
-  CCACHE_MAXSIZE: 500M
+  CPM_SOURCE_CACHE: external-docker
+  CCACHE_DIR: .ccache-docker
+  DOCKER_CONDA_RUN: docker run --rm -v "$(pwd)":/src cpp conda run -n cpp /bin/bash -c
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: switch to gcc-14 on linux
-      run: |
-        sudo apt update
-        sudo apt install gcc-14 g++-14
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Load CPM Cache
-      uses: actions/cache@v3
-      with:        
-        path: ${{env.CPM_SOURCE_CACHE}}
-        key: ${{ runner.os }}-cpm-cache
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Load Ccache cache
-      id: ccache-cache
-      uses: actions/cache@v3
-      with:
-        path: ${{env.CCACHE_DIR}}
-        key: ${{ runner.os }}-ccache-cache
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: cpp
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-    - name: Check ccache executable
-      id: check_ccache_exe
-      uses: andstor/file-existence-action@v3
-      with:
-        files: "${{env.CCACHE_DIR}}/ccache"
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
+        shell: bash
 
-    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
-      name: Download Ccache executable
-      id: ccache
-      shell: cmake -P {0}
-      run: |
-        set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${{ runner.os }}.tar.xz")
-        file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
-    
-    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
-      name: Move ccache executable to ccache directory
-      run: mkdir -p ${{env.CCACHE_DIR}} && mv ccache ${{env.CCACHE_DIR}}/ccache
+      - name: Load CPM Cache
+        uses: actions/cache@v3
+        with:        
+          path: ${{env.CPM_SOURCE_CACHE}}
+          key: docker-cpm-cache-${{steps.get-date.outputs.date}}
+          restore-keys: docker-cpm-cache-
+  
+      - name: Load Ccache cache
+        id: ccache-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{env.CCACHE_DIR}}
+          key: ccache-docker-cache-${{steps.get-date.outputs.date}}
+          restore-keys: ccache-docker-cache-
 
-    - name: Add ccache's executable path to PATH
-      run: echo "${{env.CCACHE_DIR}}" >> $GITHUB_PATH    
+      - name: Configure tests
+        run: ${{env.DOCKER_CONDA_RUN}} "cmake -S tests -B build/tests -GNinja -DCMAKE_AR=~/miniconda3/envs/cpp/bin/gcc-ar -D CPM_SOURCE_CACHE=/src/${{env.CPM_SOURCE_CACHE}} -D CMAKE_BUILD_TYPE=Debug"
+      
+      - name: Build tests
+        run: ${{env.DOCKER_CONDA_RUN}} "cmake --build build/tests"
 
-    - name: Configure
-      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -GNinja
+      - name: Run tests
+        run: ${{env.DOCKER_CONDA_RUN}} "cd build/tests && ctest"
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
+      - name: Print ccache stats
+        run: ${{env.DOCKER_CONDA_RUN}} "ccache -s -v"
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
-      run: ctest
+      - name: Code coverage report generation
+        run: | 
+            ${{env.DOCKER_CONDA_RUN}} "lcov -c -d build/tests -o build/tests/main_coverage.info"
+            ${{env.DOCKER_CONDA_RUN}} "lcov --extract build/tests/main_coverage.info -o build/tests/filtered_coverage.info \"*LinAlg*\""
 
-    - name: Code coverage report generation
-      uses: danielealbano/lcov-action@v3
-      with:
-        gcov_path: /usr/bin/gcov-9
-        remove_patterns: "./tests/*"
-
-    - name: Upload results to Codecov
-      uses: codecov/codecov-action@v4      
-      with:
-        files: ${{github.workspace}}/coverage.info
-        token: ${{secrets.CODECOV_TOKEN}}
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4      
+        with:
+          disable_search: true
+          files: ${{github.workspace}}/build/tests/filtered_coverage.info
+          token: ${{secrets.CODECOV_TOKEN}}

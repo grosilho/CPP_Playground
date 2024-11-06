@@ -32,12 +32,16 @@
 *.app
 
 # Folders
-build/*
-external/*
-install/*
-install_*/*
+build
+external
+external-docker
+install
+install_*
 coverage_html
 doc/build
+.ccache
+.ccache-docker
+.vscode
 
 # MacOS files
 .DS_Store

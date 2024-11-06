@@ -17,6 +17,8 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
       )
 endif()
 
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 # Define the compiler flags
 # ---------------------------------------------------------------------------------------
 add_library(compiler_flags INTERFACE)

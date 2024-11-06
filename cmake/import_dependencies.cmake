@@ -19,12 +19,14 @@ include(${CMAKE_CURRENT_LIST_DIR}/CPM.cmake)
 
 # CCache
 option(USE_CCACHE "Use ccache to speed up compilation" ON)
-set(CCACHE_OPTIONS "CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store")
-CPMAddPackage(
-  NAME Ccache.cmake
-  GITHUB_REPOSITORY TheLartians/Ccache.cmake
-  VERSION 1.2.5
-)
+if(USE_CCACHE)
+  set(CCACHE_OPTIONS "CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store")
+  CPMAddPackage(
+    NAME Ccache.cmake
+    GITHUB_REPOSITORY TheLartians/Ccache.cmake
+    VERSION 1.2.5
+  )
+endif()
 
 # Code formatting
 # Check https://github.com/TheLartians/Format.cmake for usage

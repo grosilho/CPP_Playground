@@ -1,0 +1,91 @@
+
+name: CI
+
+on: 
+  # push:
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+  CPM_SOURCE_CACHE: ./external
+
+  CCACHE_VERSION: 4.6
+  CCACHE_BASEDIR: ${{github.workspace}}
+  CCACHE_DIR: ./.ccache
+  CCACHE_COMPRESS: true
+  CCACHE_COMPRESSLEVEL: 5
+  CCACHE_MAXSIZE: 500M
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: switch to gcc-14 on linux
+      run: |
+        sudo apt update
+        sudo apt install gcc-14 g++-14
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
+
+    - name: Load CPM Cache
+      uses: actions/cache@v3
+      with:        
+        path: ${{env.CPM_SOURCE_CACHE}}
+        key: ${{ runner.os }}-cpm-cache
+
+    - name: Load Ccache cache
+      id: ccache-cache
+      uses: actions/cache@v3
+      with:
+        path: ${{env.CCACHE_DIR}}
+        key: ${{ runner.os }}-ccache-cache
+
+    - name: Check ccache executable
+      id: check_ccache_exe
+      uses: andstor/file-existence-action@v3
+      with:
+        files: "${{env.CCACHE_DIR}}/ccache"
+
+    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
+      name: Download Ccache executable
+      id: ccache
+      shell: cmake -P {0}
+      run: |
+        set(ccache_url "https://github.com/cristianadam/ccache/releases/download/v$ENV{CCACHE_VERSION}/${{ runner.os }}.tar.xz")
+        file(DOWNLOAD "${ccache_url}" ./ccache.tar.xz SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ccache.tar.xz)
+    
+    - if: steps.check_ccache_exe.outputs.files_exists != 'true'
+      name: Move ccache executable to ccache directory
+      run: mkdir -p ${{env.CCACHE_DIR}} && mv ccache ${{env.CCACHE_DIR}}/ccache
+
+    - name: Add ccache's executable path to PATH
+      run: echo "${{env.CCACHE_DIR}}" >> $GITHUB_PATH    
+
+    - name: Configure
+      run: cmake -S ${{github.workspace}}/tests -B ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -GNinja
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build/tests_${{env.BUILD_TYPE}}
+      run: ctest
+
+    - name: Code coverage report generation
+      uses: danielealbano/lcov-action@v3
+      with:
+        gcov_path: /usr/bin/gcov-9
+        remove_patterns: "./tests/*"
+
+    - name: Upload results to Codecov
+      uses: codecov/codecov-action@v4      
+      with:
+        files: ${{github.workspace}}/coverage.info
+        token: ${{secrets.CODECOV_TOKEN}}
