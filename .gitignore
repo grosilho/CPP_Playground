@@ -45,3 +45,6 @@ doc/build
 
 # MacOS files
 .DS_Store
+
+# Old files
+# .github/workflows/CI_bak.yml
