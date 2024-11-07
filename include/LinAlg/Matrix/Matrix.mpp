@@ -8,27 +8,47 @@ export module LinAlg.Matrix;
 
 export namespace LinAlg
 {
+    template <typename T>
+    class Matrix;
+    template <typename T>
+    void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept;
 
     namespace stdex = std::experimental;
 
-    template <typename T> class Matrix
+    template <typename T>
+    class Matrix
     {
-      public:
-        Matrix (int rows, int cols);
-        ~Matrix ();
+    public:
+        Matrix(int rows, int cols);
+        Matrix(const Matrix& other);
+        Matrix(Matrix&& other) noexcept;
+        ~Matrix();
 
-        std::pair<std::size_t, std::size_t> size () const; ///< Returns the number of rows and columns.
-        std::size_t cols () const;                         ///< Returns the number of columns.
-        std::size_t rows () const;                         ///< Returns the number of rows.
+        friend void swap<T>(Matrix& lhs, Matrix& rhs) noexcept;
 
-      private:
+        Matrix& operator=(Matrix other) noexcept;
+
+        std::pair<std::size_t, std::size_t> size() const; ///< Returns the number of rows and columns.
+        std::size_t cols() const;                         ///< Returns the number of columns.
+        std::size_t rows() const;                         ///< Returns the number of rows.
+
+        T& operator[](int i,
+            int j); ///< Access the element at row i and column j.
+        T operator[](int i,
+            int j) const; ///< Access the element at row i and column j.
+
+        static Matrix<T> Zero(int n,
+            int m);                       ///< Returns the zero matrix of size n times m.
+        static Matrix<T> Identity(int n); ///< Returns the identity matrix of size n.
+
+    private:
         std::size_t m_rows;
         std::size_t m_cols;
-        std::unique_ptr<T> m_data;
-        stdex::mdspan<T, stdex::dextents<int, 2> > m_matrix;
+        std::unique_ptr<T[]> m_data;
+        stdex::mdspan<T, stdex::dextents<int, 2>> m_matrix;
     };
 
-}
+} // namespace LinAlg
 
 // private is not implemented in GCC yet.
 // module :private;
@@ -43,30 +63,98 @@ namespace LinAlg
      * @param rows
      * @param cols
      */
-    template <typename T> Matrix<T>::Matrix (int rows, int cols)
-        : m_rows (rows), m_cols (cols), m_data (std::make_unique<T> (rows * cols))
+    template <typename T>
+    Matrix<T>::Matrix(int rows, int cols)
+        : m_rows(rows)
+        , m_cols(cols)
+        , m_data { rows * cols > 0 ? std::make_unique<T[]>(rows * cols) : nullptr }
     {
-        m_matrix = stdex::mdspan<T, stdex::dextents<int, 2> > (m_data.get (), rows, cols);
+        if (m_data)
+            m_matrix = stdex::mdspan<T, stdex::dextents<int, 2>>(m_data.get(), rows, cols);
     }
 
-    template <typename T> Matrix<T>::~Matrix () = default;
-
-    template <typename T> std::pair<std::size_t, std::size_t>
-    Matrix<T>::size () const
+    template <typename T>
+    Matrix<T>::Matrix(const Matrix& other)
+        : Matrix(other.m_rows, other.m_cols)
     {
-        return std::make_pair (m_rows, m_cols);
+        if (m_data)
+            std::copy_n(other.m_data.get(), m_rows * m_cols, m_data.get());
     }
 
-    template <typename T> std::size_t
-    Matrix<T>::cols () const
+    template <typename T>
+    Matrix<T>::Matrix(Matrix&& other) noexcept
+        : Matrix(0, 0)
+    {
+        swap(*this, other);
+    }
+
+    template <typename T>
+    Matrix<T>::~Matrix() = default;
+
+    template <typename T>
+    void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept
+    {
+        std::swap(lhs.m_rows, rhs.m_rows);
+        std::swap(lhs.m_cols, rhs.m_cols);
+        std::swap(lhs.m_data, rhs.m_data);
+        std::swap(lhs.m_matrix, rhs.m_matrix);
+    }
+
+    template <typename T>
+    Matrix<T>& Matrix<T>::operator=(Matrix other) noexcept
+    {
+        swap(*this, other);
+        return *this;
+    }
+
+    template <typename T>
+    std::pair<std::size_t, std::size_t> Matrix<T>::size() const
+    {
+        return std::make_pair(m_rows, m_cols);
+    }
+
+    template <typename T>
+    std::size_t Matrix<T>::cols() const
     {
         return m_cols;
     }
 
-    template <typename T> std::size_t
-    Matrix<T>::rows () const
+    template <typename T>
+    std::size_t Matrix<T>::rows() const
     {
         return m_rows;
     }
 
-}
+    template <typename T>
+    T& Matrix<T>::operator[](int i, int j)
+    {
+        return m_matrix[i, j];
+    }
+
+    template <typename T>
+    T Matrix<T>::operator[](int i, int j) const
+    {
+        return m_matrix[i, j];
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::Zero(int n, int m)
+    {
+        Matrix<T> zero(n, m);
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                zero[i, j] = 0;
+        return zero;
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::Identity(int n)
+    {
+        Matrix<T> identity(n, n);
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                identity[i, j] = static_cast<T>(i == j);
+        return identity;
+    }
+
+} // namespace LinAlg

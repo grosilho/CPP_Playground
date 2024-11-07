@@ -1,18 +1,18 @@
 ---
-  BasedOnStyle: GNU
-  AccessModifierOffset: '-2'
-  AlignTrailingComments: 'true'
-  AlignAfterOpenBracket: Align
-  AlignOperands: Align
-  AllowAllParametersOfDeclarationOnNextLine: 'false'
-  AlwaysBreakTemplateDeclarations: 'No'
-  BreakBeforeBraces: Linux
-  ColumnLimit: '130'
-  ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
-  IncludeBlocks: Regroup
-  IndentPPDirectives: AfterHash
+  BasedOnStyle: WebKit
   IndentWidth: '4'
+  # AccessModifierOffset: '0'
+  AlignTrailingComments: 'true'
+  # # AlignAfterOpenBracket: Align
+  # # AlignOperands: Align
+  # # AllowAllParametersOfDeclarationOnNextLine: 'false'
+  # # AlwaysBreakTemplateDeclarations: 'No'
+  BreakBeforeBraces: Allman
+  ColumnLimit: '200'
+  # ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+  IncludeBlocks: Regroup
   NamespaceIndentation: All
-  BreakBeforeBinaryOperators: All
-  BreakBeforeTernaryOperators: 'true'
+  # BreakBeforeBinaryOperators: All
+  # BreakBeforeTernaryOperators: 'true'
+  BreakTemplateDeclarations: 'true'
 ...
