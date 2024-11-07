@@ -1,21 +1,20 @@
 module;
 
-#include <experimental/mdspan>
-#include <memory>
 #include <utility>
 
 export module LinAlg.Matrix;
 
+import LinAlg.Matrix.Cont;
+
 export namespace LinAlg
 {
-    template <typename T>
+    template <typename T, typename Cont>
     class Matrix;
-    template <typename T>
-    void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept;
 
-    namespace stdex = std::experimental;
+    template <typename T, typename Cont>
+    void swap(Matrix<T, Cont>& lhs, Matrix<T, Cont>& rhs) noexcept;
 
-    template <typename T>
+    template <typename T, typename Cont = Array2D<T>>
     class Matrix
     {
     public:
@@ -24,28 +23,24 @@ export namespace LinAlg
         Matrix(Matrix&& other) noexcept;
         ~Matrix();
 
-        friend void swap<T>(Matrix& lhs, Matrix& rhs) noexcept;
+        friend void swap<T, Cont>(Matrix& lhs, Matrix& rhs) noexcept;
 
         Matrix& operator=(Matrix other) noexcept;
 
-        std::pair<std::size_t, std::size_t> size() const; ///< Returns the number of rows and columns.
-        std::size_t cols() const;                         ///< Returns the number of columns.
-        std::size_t rows() const;                         ///< Returns the number of rows.
+        std::pair<int, int> size() const; ///< Returns the number of rows and columns.
+        int cols() const;                 ///< Returns the number of columns.
+        int rows() const;                 ///< Returns the number of rows.
 
-        T& operator[](int i,
-            int j); ///< Access the element at row i and column j.
-        T operator[](int i,
-            int j) const; ///< Access the element at row i and column j.
+        T& operator[](int i, int j);      ///< Access the element at row i and column j.
+        T operator[](int i, int j) const; ///< Access the element at row i and column j.
 
-        static Matrix<T> Zero(int n,
-            int m);                       ///< Returns the zero matrix of size n times m.
-        static Matrix<T> Identity(int n); ///< Returns the identity matrix of size n.
+        static Matrix<T, Cont> Zero(int n, int m); ///< Returns the zero matrix of size n times m.
+        static Matrix<T, Cont> Identity(int n);    ///< Returns the identity matrix of size n.
 
     private:
-        std::size_t m_rows;
-        std::size_t m_cols;
-        std::unique_ptr<T[]> m_data;
-        stdex::mdspan<T, stdex::dextents<int, 2>> m_matrix;
+        int m_rows;
+        int m_cols;
+        Cont m_matrix;
     };
 
 } // namespace LinAlg
@@ -63,94 +58,92 @@ namespace LinAlg
      * @param rows
      * @param cols
      */
-    template <typename T>
-    Matrix<T>::Matrix(int rows, int cols)
-        : m_rows(rows)
-        , m_cols(cols)
-        , m_data { rows * cols > 0 ? std::make_unique<T[]>(rows * cols) : nullptr }
+    template <typename T, typename Cont>
+    Matrix<T, Cont>::Matrix(int rows, int cols)
+        : m_rows { rows }
+        , m_cols { cols }
+        , m_matrix { rows, cols }
     {
-        if (m_data)
-            m_matrix = stdex::mdspan<T, stdex::dextents<int, 2>>(m_data.get(), rows, cols);
     }
 
-    template <typename T>
-    Matrix<T>::Matrix(const Matrix& other)
-        : Matrix(other.m_rows, other.m_cols)
+    template <typename T, typename Cont>
+    Matrix<T, Cont>::Matrix(const Matrix& other)
+        : m_rows { other.m_rows }
+        , m_cols { other.m_cols }
+        , m_matrix { other.m_matrix }
     {
-        if (m_data)
-            std::copy_n(other.m_data.get(), m_rows * m_cols, m_data.get());
     }
 
-    template <typename T>
-    Matrix<T>::Matrix(Matrix&& other) noexcept
+    template <typename T, typename Cont>
+    Matrix<T, Cont>::Matrix(Matrix&& other) noexcept
         : Matrix(0, 0)
     {
         swap(*this, other);
     }
 
-    template <typename T>
-    Matrix<T>::~Matrix() = default;
+    template <typename T, typename Cont>
+    Matrix<T, Cont>::~Matrix() = default;
 
-    template <typename T>
-    void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept
+    template <typename T, typename Cont>
+    void swap(Matrix<T, Cont>& lhs, Matrix<T, Cont>& rhs) noexcept
     {
-        std::swap(lhs.m_rows, rhs.m_rows);
-        std::swap(lhs.m_cols, rhs.m_cols);
-        std::swap(lhs.m_data, rhs.m_data);
-        std::swap(lhs.m_matrix, rhs.m_matrix);
+        using std::swap;
+        swap(lhs.m_rows, rhs.m_rows);
+        swap(lhs.m_cols, rhs.m_cols);
+        swap(lhs.m_matrix, rhs.m_matrix);
     }
 
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator=(Matrix other) noexcept
+    template <typename T, typename Cont>
+    Matrix<T, Cont>& Matrix<T, Cont>::operator=(Matrix other) noexcept
     {
         swap(*this, other);
         return *this;
     }
 
-    template <typename T>
-    std::pair<std::size_t, std::size_t> Matrix<T>::size() const
+    template <typename T, typename Cont>
+    std::pair<int, int> Matrix<T, Cont>::size() const
     {
         return std::make_pair(m_rows, m_cols);
     }
 
-    template <typename T>
-    std::size_t Matrix<T>::cols() const
+    template <typename T, typename Cont>
+    int Matrix<T, Cont>::cols() const
     {
         return m_cols;
     }
 
-    template <typename T>
-    std::size_t Matrix<T>::rows() const
+    template <typename T, typename Cont>
+    int Matrix<T, Cont>::rows() const
     {
         return m_rows;
     }
 
-    template <typename T>
-    T& Matrix<T>::operator[](int i, int j)
+    template <typename T, typename Cont>
+    T& Matrix<T, Cont>::operator[](int i, int j)
     {
         return m_matrix[i, j];
     }
 
-    template <typename T>
-    T Matrix<T>::operator[](int i, int j) const
+    template <typename T, typename Cont>
+    T Matrix<T, Cont>::operator[](int i, int j) const
     {
         return m_matrix[i, j];
     }
 
-    template <typename T>
-    Matrix<T> Matrix<T>::Zero(int n, int m)
+    template <typename T, typename Cont>
+    Matrix<T, Cont> Matrix<T, Cont>::Zero(int n, int m)
     {
-        Matrix<T> zero(n, m);
+        Matrix<T, Cont> zero(n, m);
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < m; ++j)
                 zero[i, j] = 0;
         return zero;
     }
 
-    template <typename T>
-    Matrix<T> Matrix<T>::Identity(int n)
+    template <typename T, typename Cont>
+    Matrix<T, Cont> Matrix<T, Cont>::Identity(int n)
     {
-        Matrix<T> identity(n, n);
+        Matrix<T, Cont> identity(n, n);
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < n; ++j)
                 identity[i, j] = static_cast<T>(i == j);
