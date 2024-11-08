@@ -24,7 +24,7 @@ export namespace LinAlg
     class Array2D
     {
 
-    public:
+      public:
         Array2D(int rows, int cols);
         Array2D(const Array2D& other);
         Array2D(Array2D&& other) noexcept;
@@ -41,7 +41,7 @@ export namespace LinAlg
         int rows() const;
         int cols() const;
 
-    private:
+      private:
         int m_rows;
         int m_cols;
         std::unique_ptr<T[]> m_data;

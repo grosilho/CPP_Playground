@@ -1,7 +1,7 @@
 ---
   BasedOnStyle: WebKit
   IndentWidth: '4'
-  # AccessModifierOffset: '0'
+  AccessModifierOffset: '-2'
   AlignTrailingComments: 'true'
   # # AlignAfterOpenBracket: Align
   # # AlignOperands: Align
