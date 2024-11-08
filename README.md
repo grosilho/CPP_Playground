@@ -15,9 +15,17 @@ A repository where I exercise with Modern C++ and use common CI tools.
 - Doxygen: for code documentation
 - clang-format: for nice and automatic C++ code formatting
 - cmake-format: similar for CMakeLists files
+- precompiled headers: for faster compilation
 
-## C++ language features employed
-- Templates
-- Modules
-- mdspan
+## C++ language features and techniques employed
+- templates
+- expression templates
+- curiously recurring template pattern
 - copy and swap idiom
+- std::mdspan
+- std::ranges
+- std::function
+
+
+### Previously implmented but removed
+- Modules: rmeoved due to poor support

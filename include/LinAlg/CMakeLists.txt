@@ -22,8 +22,10 @@ target_include_directories(${PROJECT_NAME}
          $<INSTALL_INTERFACE:include>
 ) # but for the installed version use this directory
 
+
 target_link_libraries(${PROJECT_NAME} INTERFACE compiler_flags std::mdspan)
 target_sources(${PROJECT_NAME} INTERFACE FILE_SET headers_file_set TYPE HEADERS FILES ${headers})
+target_precompile_headers(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_LIST_DIR}/../stdafx.hpp")
 # target_sources(${PROJECT_NAME} PRIVATE ${sources})
 
 set(installable_targets ${PROJECT_NAME} compiler_flags)
