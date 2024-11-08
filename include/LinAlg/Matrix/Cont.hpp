@@ -1,8 +1,5 @@
-module;
 #include <experimental/mdspan>
 #include <memory>
-
-export module LinAlg.Matrix.Cont;
 
 namespace LinAlg
 {
@@ -12,7 +9,7 @@ namespace LinAlg
     class Matrix;
 }
 
-export namespace LinAlg
+namespace LinAlg
 {
     template <typename T>
     class Array2D;

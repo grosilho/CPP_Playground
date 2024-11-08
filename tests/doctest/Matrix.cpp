@@ -1,8 +1,7 @@
+#include <LinAlg/Matrix/Matrix.hpp>
 #include <doctest/doctest.h>
 #include <iostream>
 #include <string>
-
-import LinAlg;
 
 TEST_CASE("Matrix::size,rows,cols")
 {

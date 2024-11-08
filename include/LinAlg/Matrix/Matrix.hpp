@@ -1,10 +1,6 @@
-module;
 
-#include <utility>
 
-export module LinAlg.Matrix;
-
-export namespace LinAlg
+namespace LinAlg
 {
     template <typename T>
     class Matrix;
@@ -59,9 +55,6 @@ export namespace LinAlg
     };
 
 } // namespace LinAlg
-
-// private is not implemented in GCC yet.
-// module :private;
 
 namespace LinAlg
 {

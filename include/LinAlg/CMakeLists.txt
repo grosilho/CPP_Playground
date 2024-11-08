@@ -1,22 +1,32 @@
 # ---------------------------------------------------------------------------------------
 # Add library
 # ---------------------------------------------------------------------------------------
-add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME} INTERFACE)
 
-add_subdirectory(Matrix)
+file(
+  GLOB_RECURSE headers
+  RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+  CONFIGURE_DEPENDS "*.hpp"
+)
+# header only library, so we don't need to specify the sources
+# file(
+#   GLOB_RECURSE sources
+#   RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+#   CONFIGURE_DEPENDS "*.cpp"
+# )
 
 # the include directories are different when building and when using the installed version, so we
 # need to specify that
-target_include_directories(Matrix
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}> # when building use this directory
-         $<INSTALL_INTERFACE:include/LinAlg>
+target_include_directories(${PROJECT_NAME}
+  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..> # when building use this directory
+         $<INSTALL_INTERFACE:include>
 ) # but for the installed version use this directory
 
-target_sources(${PROJECT_NAME} PUBLIC FILE_SET linalgInterface TYPE CXX_MODULES FILES LinAlg.mpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC Matrix)
+target_link_libraries(${PROJECT_NAME} INTERFACE compiler_flags std::mdspan)
+target_sources(${PROJECT_NAME} INTERFACE FILE_SET headers_file_set TYPE HEADERS FILES ${headers})
+# target_sources(${PROJECT_NAME} PRIVATE ${sources})
 
 set(installable_targets ${PROJECT_NAME} compiler_flags)
-# set(installable_header_files ${headers})
 
 # ---------------------------------------------------------------------------------------
 # Install the library and headers
@@ -30,9 +40,12 @@ install(
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
   INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-  FILE_SET linalgInterface DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+  FILE_SET headers_file_set DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 )
-# install(FILES ${installable_header_files} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+
+# headers are already installed in the previous command, so we don't need to install them again
+# set(installable_headers ${headers})
+# install(FILES ${installable_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 
 # Create a cmake file that, when included with include(), will make the targets available in other
 # projects----------------------------------------------------------------------
