@@ -8,20 +8,16 @@ file(
   RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
   CONFIGURE_DEPENDS "*.hpp"
 )
-# header only library, so we don't need to specify the sources
-# file(
-#   GLOB_RECURSE sources
-#   RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
-#   CONFIGURE_DEPENDS "*.cpp"
-# )
+# header only library, so we don't need to specify the sources file( GLOB_RECURSE sources RELATIVE
+# "${CMAKE_CURRENT_LIST_DIR}" CONFIGURE_DEPENDS "*.cpp" )
 
 # the include directories are different when building and when using the installed version, so we
 # need to specify that
-target_include_directories(${PROJECT_NAME}
+target_include_directories(
+  ${PROJECT_NAME}
   INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..> # when building use this directory
-         $<INSTALL_INTERFACE:include>
+            $<INSTALL_INTERFACE:include>
 ) # but for the installed version use this directory
-
 
 target_link_libraries(${PROJECT_NAME} INTERFACE compiler_flags std::mdspan)
 target_sources(${PROJECT_NAME} INTERFACE FILE_SET headers_file_set TYPE HEADERS FILES ${headers})
@@ -41,16 +37,18 @@ install(
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-  INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-  FILE_SET headers_file_set DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+  INCLUDES
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+  FILE_SET headers_file_set
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 )
 
 # headers are already installed in the previous command, so we don't need to install them again
-# set(installable_headers ${headers})
-# install(FILES ${installable_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+# set(installable_headers ${headers}) install(FILES ${installable_headers} DESTINATION
+# "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 
 # Create a cmake file that, when included with include(), will make the targets available in other
-# projects----------------------------------------------------------------------
+# projects
 install(
   EXPORT ${PROJECT_NAME}Targets
   FILE ${PROJECT_NAME}Targets.cmake
@@ -58,8 +56,8 @@ install(
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
 # To use the above created file in other projects we need to know where it is. We can create a
-# Config.cmake instructing CMake where to find it ------------------------------ Generate a
-# configuration file in the build directory. Also, tell him where it will be installed
+# Config.cmake instructing CMake where to find it Generate a configuration file in the build
+# directory. Also, tell him where it will be installed
 include(CMakePackageConfigHelpers) # helper functions to create configuration files
 configure_package_config_file(
   "${CMAKE_CURRENT_LIST_DIR}/../../Config.cmake.in"
@@ -73,8 +71,8 @@ write_basic_package_version_file(
   VERSION "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}"
   COMPATIBILITY AnyNewerVersion
 )
-# Install the configuration and version file -------------------------------------------- Basically,
-# the configuration file will perform the include of the above targets file
+# Install the configuration and version file. Basically, the configuration file will perform the
+# include of the above targets file
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"

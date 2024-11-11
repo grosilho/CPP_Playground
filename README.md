@@ -1,4 +1,4 @@
-# PracticingModernCpp_app_LinearAlgebra
+# C++ Playground
 A repository where I exercise with Modern C++ and use common CI tools. A linear algebra library is used as dummy application.
 
 ## CI tools currently employed
