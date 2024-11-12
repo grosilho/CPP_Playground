@@ -3,27 +3,19 @@
 #include <iostream>
 #include <string>
 
-template <typename T>
-LinAlg::Matrix<T> createMatrix(int rows, int cols)
-{
-    LinAlg::Matrix<T> m(rows, cols);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            m[i, j] = i * m.cols() + j;
-    return m;
-}
-
-TEST_CASE("Matrix::size,rows,cols")
+TEST_CASE("Matrix::shape,rows,cols")
 {
     LinAlg::Matrix<double> m1(3, 4);
     CHECK_EQ(m1.rows(), 3);
     CHECK_EQ(m1.cols(), 4);
-    CHECK_EQ(m1.size(), std::make_pair<int, int>(3, 4));
+    CHECK_EQ(m1.shape(), std::make_pair<int, int>(3, 4));
+    CHECK_EQ(m1.size(), 12);
 
     LinAlg::Matrix<double> m2(5, 6);
     CHECK_EQ(m2.rows(), 5);
     CHECK_EQ(m2.cols(), 6);
-    CHECK_EQ(m2.size(), std::make_pair<int, int>(5, 6));
+    CHECK_EQ(m2.shape(), std::make_pair<int, int>(5, 6));
+    CHECK_EQ(m2.size(), 30);
 }
 
 TEST_CASE("Matrix::operator[]")
@@ -41,19 +33,31 @@ TEST_CASE("Matrix::operator[]")
         }
 }
 
+TEST_CASE("Matrix::Matrix(std::initializer_list)")
+{
+    LinAlg::Matrix<int> m { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 10, 11, 12 } };
+    CHECK_EQ(m.rows(), 4);
+    CHECK_EQ(m.cols(), 3);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            CHECK_EQ(m[i, j], i * m.cols() + j + 1);
+
+    LinAlg::Matrix<int> m2 = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 10, 11, 12 }, { 13, 14, 15 } };
+    CHECK_EQ(m2.rows(), 5);
+    CHECK_EQ(m2.cols(), 3);
+    for (int i = 0; i < m2.rows(); ++i)
+        for (int j = 0; j < m2.cols(); ++j)
+            CHECK_EQ(m2[i, j], i * m2.cols() + j + 1);
+}
+
 TEST_CASE("Matrix::copy and move")
 {
-    LinAlg::Matrix<int> m1(3, 4);
-    for (int i = 0; i < m1.rows(); ++i)
-        for (int j = 0; j < m1.cols(); ++j)
-            m1[i, j] = i * m1.cols() + j;
+    LinAlg::Matrix<int> m1 { { 2, 5, 4 }, { 8, 10, 3 }, { 9, 2, 6 }, { 7, 1, 3 } };
 
     SUBCASE("copy constructor")
     {
         LinAlg::Matrix<int> m2(m1);
-        CHECK_EQ(m1.size(), m2.size());
-        CHECK_EQ(m1.rows(), m2.rows());
-        CHECK_EQ(m1.cols(), m2.cols());
+        CHECK_EQ(m1.shape(), m2.shape());
         for (int i = 0; i < m1.rows(); ++i)
             for (int j = 0; j < m1.cols(); ++j)
             {
@@ -65,9 +69,7 @@ TEST_CASE("Matrix::copy and move")
     {
         LinAlg::Matrix<int> m2(0, 0);
         m2 = m1;
-        CHECK_EQ(m1.size(), m2.size());
-        CHECK_EQ(m1.rows(), m2.rows());
-        CHECK_EQ(m1.cols(), m2.cols());
+        CHECK_EQ(m1.shape(), m2.shape());
         for (int i = 0; i < m1.rows(); ++i)
             for (int j = 0; j < m1.cols(); ++j)
             {
@@ -79,12 +81,8 @@ TEST_CASE("Matrix::copy and move")
     {
         LinAlg::Matrix<int> m1_copy(m1);
         LinAlg::Matrix<int> m2(std::move(m1));
-        CHECK_EQ(m1.size(), std::make_pair<int, int>(0, 0));
-        CHECK_EQ(m1.rows(), 0);
-        CHECK_EQ(m1.cols(), 0);
-        CHECK_EQ(m1_copy.size(), m2.size());
-        CHECK_EQ(m1_copy.rows(), m2.rows());
-        CHECK_EQ(m1_copy.cols(), m2.cols());
+        CHECK_EQ(m1.shape(), std::make_pair<int, int>(0, 0));
+        CHECK_EQ(m1_copy.shape(), m2.shape());
         for (int i = 0; i < m1_copy.rows(); ++i)
             for (int j = 0; j < m1_copy.cols(); ++j)
             {
@@ -97,12 +95,8 @@ TEST_CASE("Matrix::copy and move")
         LinAlg::Matrix<int> m1_copy(m1);
         LinAlg::Matrix<int> m2(0, 0);
         m2 = std::move(m1);
-        CHECK_EQ(m1.size(), std::make_pair<int, int>(0, 0));
-        CHECK_EQ(m1.rows(), 0);
-        CHECK_EQ(m1.cols(), 0);
-        CHECK_EQ(m1_copy.size(), m2.size());
-        CHECK_EQ(m1_copy.rows(), m2.rows());
-        CHECK_EQ(m1_copy.cols(), m2.cols());
+        CHECK_EQ(m1.shape(), std::make_pair<int, int>(0, 0));
+        CHECK_EQ(m1_copy.shape(), m2.shape());
         for (int i = 0; i < m1_copy.rows(); ++i)
             for (int j = 0; j < m1_copy.cols(); ++j)
             {
@@ -134,16 +128,14 @@ TEST_CASE("Matrix::Zero")
 
 TEST_CASE("Matrix::swap")
 {
-    LinAlg::Matrix<double> m1 = createMatrix<double>(3, 4);
-    LinAlg::Matrix<double> m2 = createMatrix<double>(5, 6);
+    LinAlg::Matrix<double> m1 { { 9, 6 }, { 2, 3 }, { 2, 6 }, { 2, 5 } };
+    LinAlg::Matrix<double> m2 { { 4, 5, 7, 3, 7, 9, 2 }, { 3, 6, 2, 8, 10, 45, 6 } };
     LinAlg::Matrix<double> m1_copy(m1);
     LinAlg::Matrix<double> m2_copy(m2);
 
     LinAlg::swap(m1, m2);
 
-    CHECK_EQ(m1.size(), m2_copy.size());
-    CHECK_EQ(m1.rows(), m2_copy.rows());
-    CHECK_EQ(m1.cols(), m2_copy.cols());
+    CHECK_EQ(m1.shape(), m2_copy.shape());
     for (int i = 0; i < m1.rows(); ++i)
         for (int j = 0; j < m1.cols(); ++j)
         {
@@ -151,9 +143,7 @@ TEST_CASE("Matrix::swap")
             CHECK(m1[i * m1.cols() + j] == doctest::Approx(m1[i, j]).epsilon(1e-12));
         }
 
-    CHECK_EQ(m2.size(), m1_copy.size());
-    CHECK_EQ(m2.rows(), m1_copy.rows());
-    CHECK_EQ(m2.cols(), m1_copy.cols());
+    CHECK_EQ(m2.shape(), m1_copy.shape());
     for (int i = 0; i < m2.rows(); ++i)
         for (int j = 0; j < m2.cols(); ++j)
         {
@@ -185,7 +175,7 @@ TEST_CASE("Matrix::zero")
 
 TEST_CASE("Matrix::apply")
 {
-    LinAlg::Matrix<double> m = createMatrix<double>(3, 8);
+    LinAlg::Matrix<double> m { { 3.23, 5.453, 9.243 }, { 4.23, 9.23, 4.89 } };
 
     std::function cos = [](double i) { return std::cos(i); };
     LinAlg::Matrix<double> cos_m = m.apply(cos);
@@ -197,7 +187,7 @@ TEST_CASE("Matrix::apply")
 
 TEST_CASE("Matrix::apply_inplace")
 {
-    LinAlg::Matrix<double> m = createMatrix<double>(3, 8);
+    LinAlg::Matrix<double> m { { 1.23, 3.54, 2.64, 90.45 }, { 3.23, 5.453, 9.243, 4.23 }, { 9.73, 4.89, 3.23, 5.453 } };
     LinAlg::Matrix<double> m_copy(m);
 
     std::function sin = [](double i) { return std::sin(i); };
@@ -210,7 +200,7 @@ TEST_CASE("Matrix::apply_inplace")
 
 TEST_CASE("Matrix::copy from different type")
 {
-    LinAlg::Matrix<double> m1 = createMatrix<double>(3, 8);
+    LinAlg::Matrix<double> m1 { { 3.23, 9.34, 10.34 }, { 4.23, 9.23, 4.89 } };
 
     SUBCASE("copy")
     {

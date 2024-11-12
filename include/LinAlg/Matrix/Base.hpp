@@ -22,9 +22,10 @@ namespace LinAlg
 
         MatrixBase& operator=(MatrixBase other) noexcept;
 
-        std::pair<int, int> size() const; ///< Returns the number of rows and columns.
-        int cols() const;                 ///< Returns the number of columns.
-        int rows() const;                 ///< Returns the number of rows.
+        std::pair<int, int> shape() const; ///< Returns the number of rows and columns.
+        int cols() const;                  ///< Returns the number of columns.
+        int rows() const;                  ///< Returns the number of rows.
+        int size() const;                  ///< Returns the number of elements.
 
         Scalar& operator[](int i, int j);      ///< Access the element at row i and column j.
         Scalar operator[](int i, int j) const; ///< Access the element at row i and column j.
@@ -32,6 +33,8 @@ namespace LinAlg
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
         const Derived& derived() const;
+
+        static const bool is_leaf { false };
 
       protected:
         int m_rows;
@@ -87,7 +90,7 @@ namespace LinAlg
     }
 
     template <typename Derived>
-    std::pair<int, int> MatrixBase<Derived>::size() const
+    std::pair<int, int> MatrixBase<Derived>::shape() const
     {
         return std::make_pair(m_rows, m_cols);
     }
@@ -102,6 +105,12 @@ namespace LinAlg
     int MatrixBase<Derived>::rows() const
     {
         return m_rows;
+    }
+
+    template <typename Derived>
+    int MatrixBase<Derived>::size() const
+    {
+        return m_rows * m_cols;
     }
 
     template <typename Derived>

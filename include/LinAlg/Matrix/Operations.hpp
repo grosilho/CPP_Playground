@@ -4,29 +4,76 @@
 
 namespace LinAlg
 {
-    template <typename LHS, typename RHS>
-    class MatrixSum : public MatrixBase<MatrixSum<LHS, RHS>>
+    template <typename LHS, typename RHS, BinaryOp<CommonScalar<LHS, RHS>> BinOp>
+    class ElWiseOp : public MatrixBase<ElWiseOp<LHS, RHS, BinOp>>
     {
       public:
-        using Scalar = std::common_type_t<typename LHS::Scalar, typename RHS::Scalar>;
+        using Scalar = CommonScalar<LHS, RHS>;
 
-        MatrixSum(const LHS& lhs, const RHS& rhs)
-            : MatrixBase<MatrixSum<LHS, RHS>>(lhs.rows(), lhs.cols())
+        ElWiseOp(const LHS& lhs, const RHS& rhs)
+            : MatrixBase<ElWiseOp<LHS, RHS, BinOp>>(lhs.rows(), lhs.cols())
             , m_lhs(lhs)
             , m_rhs(rhs)
         {
         }
 
-        Scalar operator[](int i) const { return m_lhs[i] + m_rhs[i]; }
+        Scalar operator[](int i) const { return BinOp(m_lhs[i], m_rhs[i]); }
+        Scalar operator[](int i, int j) const { return BinOp(m_lhs[i, j], m_rhs[i, j]); }
 
       private:
-        const LHS& m_lhs;
-        const RHS& m_rhs;
+        typename std::conditional_t<LHS::is_leaf, const LHS&, const LHS> m_lhs;
+        typename std::conditional_t<RHS::is_leaf, const RHS&, const RHS> m_rhs;
     };
 
-    template <typename LHS, typename RHS>
-    MatrixSum<LHS, RHS> operator+(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+    namespace Internals
     {
-        return MatrixSum<LHS, RHS>(lhs.derived(), rhs.derived());
+        template <typename T>
+        T Sum(const T& lhs, const T& rhs)
+        {
+            return lhs + rhs;
+        }
+
+        template <typename T>
+        T Sub(const T& lhs, const T& rhs)
+        {
+            return lhs - rhs;
+        }
+
+        template <typename T>
+        T Mul(const T& lhs, const T& rhs)
+        {
+            return lhs * rhs;
+        }
+
+        template <typename T>
+        T Div(const T& lhs, const T& rhs)
+        {
+            return lhs / rhs;
+        }
     }
+
+    template <typename LHS, typename RHS>
+    ElWiseOp<LHS, RHS, Internals::Sum<CommonScalar<LHS, RHS>>> operator+(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+    {
+        return ElWiseOp<LHS, RHS, Internals::Sum<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+    }
+
+    template <typename LHS, typename RHS>
+    ElWiseOp<LHS, RHS, Internals::Sub<CommonScalar<LHS, RHS>>> operator-(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+    {
+        return ElWiseOp<LHS, RHS, Internals::Sub<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+    }
+
+    template <typename LHS, typename RHS>
+    ElWiseOp<LHS, RHS, Internals::Mul<CommonScalar<LHS, RHS>>> operator*(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+    {
+        return ElWiseOp<LHS, RHS, Internals::Mul<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+    }
+
+    template <typename LHS, typename RHS>
+    ElWiseOp<LHS, RHS, Internals::Div<CommonScalar<LHS, RHS>>> operator/(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+    {
+        return ElWiseOp<LHS, RHS, Internals::Div<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+    }
+
 }

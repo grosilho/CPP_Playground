@@ -15,6 +15,7 @@ namespace LinAlg
         Matrix(int rows, int cols);
         Matrix(const Matrix& other);
         Matrix(Matrix&& other) noexcept;
+        Matrix(std::initializer_list<std::initializer_list<T>> list);
 
         template <typename OtherDerived>
         Matrix(const MatrixBase<OtherDerived>& other) noexcept;
@@ -41,6 +42,8 @@ namespace LinAlg
 
         static Matrix<T> Zero(int n, int m); ///< Returns the zero Matrix of size n times m.
         static Matrix<T> Identity(int n);    ///< Returns the identity Matrix of size n.
+
+        static const bool is_leaf { true };
 
       protected:
         std::unique_ptr<T[]> m_data;
@@ -81,6 +84,23 @@ namespace LinAlg
         : Matrix(0, 0)
     {
         swap(*this, other);
+    }
+
+    template <typename T>
+    Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> list)
+        : Matrix(list.size(), list.begin()->size())
+    {
+        int i = 0;
+        for (const auto& row : list)
+        {
+            int j = 0;
+            for (const auto& elem : row)
+            {
+                m_matrix[i, j] = elem;
+                ++j;
+            }
+            ++i;
+        }
     }
 
     template <typename T>

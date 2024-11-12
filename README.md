@@ -20,12 +20,21 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 ## C++ language features and techniques employed
 - templates
 - expression templates
+- variadic templates
+- variable templates
+- fold expressions
+- template template classes
 - curiously recurring template pattern
 - copy and swap idiom
+- move semantics
+- lambda functions
+- std::span
 - std::mdspan
 - std::ranges
 - std::function
+- std::conditional
+- std::initializer_list
 
 
 ### Previously implmented but removed
-- Modules: rmeoved due to poor support
+- Modules: removed due to poor support

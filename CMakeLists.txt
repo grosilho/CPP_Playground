@@ -1,5 +1,5 @@
 # Minimum version 3.28, for C++20 modules support
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.29)
 
 # Define the project
 # ---------------------------------------------------------------------------------------
@@ -9,6 +9,9 @@ project(
   LANGUAGES CXX
   DESCRIPTION "A simple project to practice C++, CMake."
 )
+
+# We are not using modules anymore
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(

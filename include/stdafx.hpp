@@ -3,6 +3,7 @@
 #include <cmath>
 #include <experimental/mdspan>
 #include <functional>
+#include <initializer_list>
 #include <memory>
 #include <span>
 #include <type_traits>

@@ -1,31 +1,112 @@
 #include <LinAlg/Matrix.hpp>
 #include <doctest/doctest.h>
+#include <functional>
 #include <iostream>
 #include <string>
+#include <vector>
 
-TEST_CASE("Matrix Sum")
+/*
+The next two functions perform the same task but with different approaches.
+The first one uses a functor to perform the operation, while the second one uses a function.
+This is just to try out template template classes (in the first) and variable templates (in the second).
+Both use variadic templates to accept any number of matrices.
+*/
+template <template <typename T> class Fun, typename FirstMat, typename... OtherMats>
+void test_el_wise_op_with_functor(FirstMat m1, OtherMats... other_matrices)
 {
-    LinAlg::Matrix<int> m1(2, 3);
-    LinAlg::Matrix<int> m2(2, 3);
-    LinAlg::Matrix<int> m3(2, 3);
-    m1.set(2);
-    m2.set(3);
-    m3.set(5);
+    using Scalar = typename FirstMat::Scalar;
+    Fun<FirstMat> Fun_Mat {};
+    Fun<Scalar> Fun_Scalar {};
 
-    SUBCASE("two matrices")
+    auto result = Fun_Mat(m1, other_matrices...);
+
+    for (int i = 0; i < m1.size(); i++)
+        CHECK(Fun_Scalar(m1[i], other_matrices[i]...) == doctest::Approx(result[i]).epsilon(1e-10));
+}
+
+// Unfortunately variable templates cannot be used as template template parameters, so we need to pass the function twice, once for the matrices and once for the scalars.
+template <typename FunMat, typename FunScalar, typename FirstMat, typename... OtherMats>
+void test_el_wise_op_with_function(FunMat fun_mat, FunScalar fun_scalar, FirstMat m1, OtherMats... other_matrices)
+{
+    auto result = fun_mat(m1, other_matrices...);
+    for (int i = 0; i < m1.size(); i++)
+        CHECK(fun_scalar(m1[i], other_matrices[i]...) == doctest::Approx(result[i]).epsilon(1e-10));
+}
+
+// The functors below are used to test the element wise operations.
+template <typename T>
+struct test_sum
+{
+    template <typename... Args>
+    T operator()(Args&... args)
     {
-        LinAlg::Matrix<int> sum = m1 + m2;
-
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-                CHECK_EQ(sum[i, j], m1[i, j] + m2[i, j]);
+        return (args + ...);
     }
-    SUBCASE("three matrices")
+};
+template <typename T>
+struct test_diff
+{
+    template <typename... Args>
+    T operator()(Args&... args)
     {
-        LinAlg::Matrix<int> sum = m1 + m2 + m3;
-
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-                CHECK_EQ(sum[i, j], m1[i, j] + m2[i, j] + m3[i, j]);
+        return (args - ...); // equivalent to: (A1 - (A2 - (A3-...))). Ex: (A1 - (A2 - (A3 - A4))) = A1 - A2 + A3 - A4
     }
+};
+template <typename T>
+struct test_mult
+{
+    template <typename... Args>
+    T operator()(Args&... args)
+    {
+        return (args * ...);
+    }
+};
+template <typename T>
+struct test_div
+{
+    template <typename... Args>
+    T operator()(Args&... args)
+    {
+        return (args / ...);
+    }
+};
+
+// The functions below are used to test more complex element wise operations.
+template <class T>
+std::function<T(T&, T&, T&)> test_composition_1 = [](T& a, T& b, T& c) { return a + b * c; };
+template <class T>
+std::function<T(T&, T&, T&)> test_composition_2 = [](T& a, T& b, T& c) { return a / c + b; };
+template <class T>
+std::function<T(T&, T&, T&)> test_composition_3 = [](T& a, T& b, T& c) { return (a * c + b / c) * c + a - b; };
+
+TEST_CASE("Matrix element wise opeations")
+{
+    using Scalar = double;
+    using Mat = LinAlg::Matrix<Scalar>;
+    Mat m1 { { 13.23, 34.24, 56.43 }, { 45.23, 93.12, 64.54 } };
+    Mat m2 { { 34.23, 23.54, 53.34 }, { 23.78, 12.45, 34.43 } };
+    Mat m3 { { 65.45, 76.65, 58.23 }, { 95.65, 65.23, 35.90 } };
+
+    SUBCASE("sum two matrices") { test_el_wise_op_with_functor<test_sum>(m1, m2); }
+    SUBCASE("sum three matrices") { test_el_wise_op_with_functor<test_sum>(m1, m2, m3); }
+    SUBCASE("diff two matrices") { test_el_wise_op_with_functor<test_diff>(m1, m2); }
+    SUBCASE("diff three matrices") { test_el_wise_op_with_functor<test_diff>(m1, m2, m3); }
+    SUBCASE("mult two matrices") { test_el_wise_op_with_functor<test_mult>(m1, m2); }
+    SUBCASE("mult three matrices") { test_el_wise_op_with_functor<test_mult>(m1, m2, m3); }
+    SUBCASE("div two matrices") { test_el_wise_op_with_functor<test_div>(m1, m2); }
+    SUBCASE("div three matrices") { test_el_wise_op_with_functor<test_div>(m1, m2, m3); }
+
+    SUBCASE("temporary object")
+    {
+        using LinAlg::ElWiseOp;
+        using LinAlg::Matrix;
+
+        ElWiseOp<Matrix<Scalar>, ElWiseOp<Matrix<Scalar>, Matrix<Scalar>, LinAlg::Internals::Sum<Scalar>>, LinAlg::Internals::Sum<Scalar>> sum(m1 + (m2 + m3));
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            CHECK(sum[i] == doctest::Approx(m1[i] + m2[i] + m3[i]).epsilon(1e-10));
+    }
+
+    SUBCASE("composition 1") { test_el_wise_op_with_function(test_composition_1<Mat>, test_composition_1<Scalar>, m1, m2, m3); }
+    SUBCASE("composition 2") { test_el_wise_op_with_function(test_composition_2<Mat>, test_composition_2<Scalar>, m1, m2, m3); }
+    SUBCASE("composition 3") { test_el_wise_op_with_function(test_composition_3<Mat>, test_composition_3<Scalar>, m1, m2, m3); }
 }
