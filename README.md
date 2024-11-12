@@ -37,4 +37,4 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 
 
 ### Previously implmented but removed
-- Modules removed due to poor support
+- Modules: removed due to poor support
