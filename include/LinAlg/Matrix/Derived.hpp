@@ -7,6 +7,12 @@ namespace LinAlg
     template <typename T>
     void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept;
 
+    // template <typename T>
+    // Matrix<T> mat_mult(const Matrix<T>& lhs, const Matrix<T>& rhs);
+
+    // template <typename Derived, typename OtherDerived, bool pre_eval_expr = true>
+    // Matrix<CommonScalar<Derived, OtherDerived>> mat_mult_new(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs);
+
     template <typename T>
     class Matrix : public MatrixBase<Matrix<T>>
     {
@@ -40,8 +46,11 @@ namespace LinAlg
         Matrix<T>& zero();                                       ///< Sets all elements to zero.
         Matrix<T>& set(const T& val);                            ///< Sets all elements to val.
 
+        const Matrix<T>& eval() const;
+
         static Matrix<T> Zero(int n, int m); ///< Returns the zero Matrix of size n times m.
         static Matrix<T> Identity(int n);    ///< Returns the identity Matrix of size n.
+        static Matrix<T> randn(int rows, int cols, T mean = 0, T stddev = 1, std::optional<int> seed = std::nullopt);
 
         static const bool is_leaf { true };
 
@@ -163,6 +172,34 @@ namespace LinAlg
         return m_flattened[i];
     }
 
+    template <typename Derived, typename OtherDerived, bool pre_eval_expr = false>
+    Matrix<CommonScalar<Derived, OtherDerived>> mat_mult(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs)
+    {
+        assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");
+
+        using T = CommonScalar<Derived, OtherDerived>;
+        Matrix<T> result(lhs.rows(), rhs.cols());
+
+        if constexpr (pre_eval_expr)
+            mat_mult(lhs.derived().eval(), rhs.derived().eval(), result);
+        else
+            mat_mult(lhs, rhs, result);
+
+        return result;
+    }
+
+    template <typename A, typename B, typename AB>
+    void mat_mult(const A& a, const B& b, AB& ab)
+    {
+        for (int i = 0; i < a.rows(); ++i)
+            for (int j = 0; j < b.cols(); ++j)
+            {
+                ab[i, j] = a[i, 0] * b[0, j];
+                for (int k = 1; k < a.cols(); ++k)
+                    ab[i, j] += a[i, k] * b[k, j];
+            }
+    }
+
     template <typename T>
     Matrix<T>& Matrix<T>::apply_inplace(const std::function<T(T&)>& f)
     {
@@ -188,6 +225,12 @@ namespace LinAlg
     }
 
     template <typename T>
+    const Matrix<T>& Matrix<T>::eval() const
+    {
+        return *this;
+    }
+
+    template <typename T>
     Matrix<T>& Matrix<T>::zero()
     {
         std::function to_zero = [](T&) -> T { return 0; };
@@ -208,6 +251,18 @@ namespace LinAlg
             for (int j = 0; j < n; ++j)
                 identity[i, j] = static_cast<Scalar>(i == j);
         return identity;
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::randn(int rows, int cols, T mean, T stddev, std::optional<int> seed)
+    {
+        std::mt19937 gen(seed.value_or(std::random_device()()));
+        std::normal_distribution<double> dist(mean, stddev);
+        Matrix<T> result(rows, cols);
+        for (int i = 0; i < rows; ++i)
+            for (int j = 0; j < cols; ++j)
+                result[i, j] = static_cast<T>(dist(gen));
+        return result;
     }
 
 }

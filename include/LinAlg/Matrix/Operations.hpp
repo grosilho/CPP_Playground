@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LinAlg/Matrix/Base.hpp>
+#include <LinAlg/Matrix/Derived.hpp>
 
 namespace LinAlg
 {
@@ -19,6 +19,8 @@ namespace LinAlg
 
         Scalar operator[](int i) const { return BinOp(m_lhs[i], m_rhs[i]); }
         Scalar operator[](int i, int j) const { return BinOp(m_lhs[i, j], m_rhs[i, j]); }
+
+        Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }
 
       private:
         typename std::conditional_t<LHS::is_leaf, const LHS&, const LHS> m_lhs;

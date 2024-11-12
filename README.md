@@ -28,12 +28,14 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - copy and swap idiom
 - move semantics
 - lambda functions
+- if constexpr
 - std::span
 - std::mdspan
 - std::ranges
 - std::function
 - std::conditional
 - std::initializer_list
+- std::optional
 
 
 ### Previously implmented but removed
