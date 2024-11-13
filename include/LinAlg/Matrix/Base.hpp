@@ -18,6 +18,8 @@ namespace LinAlg
         MatrixBase(MatrixBase&& other) noexcept;
         ~MatrixBase() = default;
 
+        void reinit(int rows, int cols);
+
         friend void swap<Derived>(MatrixBase& lhs, MatrixBase& rhs) noexcept;
 
         MatrixBase& operator=(MatrixBase other) noexcept;
@@ -72,6 +74,13 @@ namespace LinAlg
         : MatrixBase(0, 0)
     {
         swap(*this, other);
+    }
+
+    template <typename Derived>
+    void MatrixBase<Derived>::reinit(int rows, int cols)
+    {
+        m_rows = rows;
+        m_cols = cols;
     }
 
     template <typename Derived>

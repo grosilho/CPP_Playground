@@ -9,6 +9,7 @@
 #include <optional>
 #include <random>
 #include <span>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 

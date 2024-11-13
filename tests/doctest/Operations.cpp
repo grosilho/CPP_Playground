@@ -100,10 +100,9 @@ TEST_CASE("Matrix element wise operations")
 
     SUBCASE("temporary object")
     {
-        using LinAlg::ElWiseOp;
         using LinAlg::Matrix;
 
-        ElWiseOp<Matrix<Scalar>, ElWiseOp<Matrix<Scalar>, Matrix<Scalar>, LinAlg::Internals::Sum<Scalar>>, LinAlg::Internals::Sum<Scalar>> sum(m1 + (m2 + m3));
+        auto sum(m1 + (m2 + m3));
         for (int i = 0; i < m1.rows() * m1.cols(); ++i)
             CHECK(sum[i] == doctest::Approx(m1[i] + m2[i] + m3[i]).epsilon(1e-10));
     }
@@ -111,6 +110,14 @@ TEST_CASE("Matrix element wise operations")
     SUBCASE("composition 1") { test_el_wise_op_with_function(test_composition_1<Mat>, test_composition_1<Scalar>, m1, m2, m3); }
     SUBCASE("composition 2") { test_el_wise_op_with_function(test_composition_2<Mat>, test_composition_2<Scalar>, m1, m2, m3); }
     SUBCASE("composition 3") { test_el_wise_op_with_function(test_composition_3<Mat>, test_composition_3<Scalar>, m1, m2, m3); }
+
+    SUBCASE("matrix + scalar")
+    {
+        Scalar scalar = 3.14;
+        auto sum = m1 + scalar;
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            CHECK(sum[i] == doctest::Approx(m1[i] + scalar).epsilon(1e-10));
+    }
 }
 
 template <typename A, typename B>

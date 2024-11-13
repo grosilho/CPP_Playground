@@ -24,6 +24,7 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - variable templates
 - fold expressions
 - template template classes
+- concepts
 - curiously recurring template pattern
 - copy and swap idiom
 - move semantics

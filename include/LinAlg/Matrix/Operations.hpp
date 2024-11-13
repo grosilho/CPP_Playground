@@ -4,78 +4,94 @@
 
 namespace LinAlg
 {
-    template <typename LHS, typename RHS, BinaryOp<CommonScalar<LHS, RHS>> BinOp>
-    class ElWiseOp : public MatrixBase<ElWiseOp<LHS, RHS, BinOp>>
+    namespace _implementation_details
     {
-      public:
-        using Scalar = CommonScalar<LHS, RHS>;
+        template <typename T>
+        concept MatrixType = std::is_base_of<MatrixBase<T>, std::decay_t<T>>::value;
 
-        ElWiseOp(const LHS& lhs, const RHS& rhs)
-            : MatrixBase<ElWiseOp<LHS, RHS, BinOp>>(lhs.rows(), lhs.cols())
-            , m_lhs(lhs)
-            , m_rhs(rhs)
+        template <typename T>
+        concept ScalarType = std::is_integral_v<T> || std::is_floating_point_v<T>;
+
+        template <MatrixType T>
+        auto subscript(const T& t, int i)
         {
+            return t[i];
         }
 
-        Scalar operator[](int i) const { return BinOp(m_lhs[i], m_rhs[i]); }
-        Scalar operator[](int i, int j) const { return BinOp(m_lhs[i, j], m_rhs[i, j]); }
+        template <ScalarType T>
+        auto subscript(const T& t, int)
+        {
+            return t;
+        }
+    }
+
+    template <typename Callable, typename... Args>
+    class Expr : public MatrixBase<Expr<Callable, Args...>>
+    {
+      public:
+        using Scalar = CommonScalar<Args...>;
+
+        Expr(Callable callable, const Args&... args)
+            : MatrixBase<Expr<Callable, Args...>>(0, 0)
+            , m_args(args...)
+            , m_callable(callable)
+        {
+            // bool same_size = (args.size() == ...);
+            // assert(same_size && "All matrices must have the same size.");
+
+            this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
+        }
+
+        Scalar operator[](int i) const
+        {
+            using _implementation_details::subscript;
+            const auto f = [this, i](const Args&... args) { return m_callable(subscript(args, i)...); };
+            return std::apply(f, m_args);
+        }
+        Scalar operator[](int i, int j) const { return operator[](i*(this->m_cols) + j); }
 
         Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }
 
       private:
-        typename std::conditional_t<LHS::is_leaf, const LHS&, const LHS> m_lhs;
-        typename std::conditional_t<RHS::is_leaf, const RHS&, const RHS> m_rhs;
+        std::tuple<std::conditional_t<traits<Args>::is_leaf::value, const Args&, const Args>...> m_args;
+        Callable m_callable;
     };
 
-    namespace Internals
+    namespace _implementation_details
     {
         template <typename T>
-        T Sum(const T& lhs, const T& rhs)
-        {
-            return lhs + rhs;
-        }
-
-        template <typename T>
-        T Sub(const T& lhs, const T& rhs)
-        {
-            return lhs - rhs;
-        }
-
-        template <typename T>
-        T Mul(const T& lhs, const T& rhs)
-        {
-            return lhs * rhs;
-        }
-
-        template <typename T>
-        T Div(const T& lhs, const T& rhs)
-        {
-            return lhs / rhs;
-        }
+        concept AllowedType = MatrixType<T> || ScalarType<T>;
+        template <typename T, typename U>
+        concept BothScalars = ScalarType<T> && ScalarType<U>;
+        template <typename LHS, typename RHS>
+        concept AcceptedTypes = AllowedType<LHS> && AllowedType<RHS> && !BothScalars<LHS, RHS>;
     }
 
     template <typename LHS, typename RHS>
-    ElWiseOp<LHS, RHS, Internals::Sum<CommonScalar<LHS, RHS>>> operator+(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+        requires _implementation_details::AcceptedTypes<LHS, RHS>
+    auto operator+(const LHS& lhs, const RHS& rhs)
     {
-        return ElWiseOp<LHS, RHS, Internals::Sum<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+        return Expr([](auto const& l, auto const& r) { return l + r; }, lhs, rhs);
     }
 
     template <typename LHS, typename RHS>
-    ElWiseOp<LHS, RHS, Internals::Sub<CommonScalar<LHS, RHS>>> operator-(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+        requires _implementation_details::AcceptedTypes<LHS, RHS>
+    auto operator-(const LHS& lhs, const RHS& rhs)
     {
-        return ElWiseOp<LHS, RHS, Internals::Sub<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+        return Expr([](auto const& l, auto const& r) { return l - r; }, lhs, rhs);
     }
 
     template <typename LHS, typename RHS>
-    ElWiseOp<LHS, RHS, Internals::Mul<CommonScalar<LHS, RHS>>> operator*(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+        requires _implementation_details::AcceptedTypes<LHS, RHS>
+    auto operator*(const LHS& lhs, const RHS& rhs)
     {
-        return ElWiseOp<LHS, RHS, Internals::Mul<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+        return Expr([](auto const& l, auto const& r) { return l * r; }, lhs, rhs);
     }
 
     template <typename LHS, typename RHS>
-    ElWiseOp<LHS, RHS, Internals::Div<CommonScalar<LHS, RHS>>> operator/(const MatrixBase<LHS>& lhs, const MatrixBase<RHS>& rhs)
+        requires _implementation_details::AcceptedTypes<LHS, RHS>
+    auto operator/(const LHS& lhs, const RHS& rhs)
     {
-        return ElWiseOp<LHS, RHS, Internals::Div<CommonScalar<LHS, RHS>>>(lhs.derived(), rhs.derived());
+        return Expr([](auto const& l, auto const& r) { return l / r; }, lhs, rhs);
     }
-
 }

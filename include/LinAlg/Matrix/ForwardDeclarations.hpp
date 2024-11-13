@@ -2,33 +2,39 @@
 
 namespace LinAlg
 {
-    template <typename T>
-    using BinaryOp = T (*)(const T&, const T&);
-
-    template <typename LHS, typename RHS>
-    using CommonScalar = std::common_type_t<typename LHS::Scalar, typename RHS::Scalar>;
-
     template <typename Derived>
     class MatrixBase;
 
     template <typename T>
     class Matrix;
 
-    template <typename LHS, typename RHS, BinaryOp<CommonScalar<LHS, RHS>> BinOp>
-    class ElWiseOp;
+    template <typename Callable, typename... Args>
+    class Expr;
 
     template <typename T>
     struct traits;
+
+    template <typename... Args>
+    using CommonScalar = std::common_type_t<typename traits<Args>::Scalar...>;
 
     template <typename T>
     struct traits<Matrix<T>>
     {
         using Scalar = T;
+        using is_leaf = std::true_type;
     };
 
-    template <typename LHS, typename RHS, BinaryOp<CommonScalar<LHS, RHS>> BinOp>
-    struct traits<ElWiseOp<LHS, RHS, BinOp>>
+    template <>
+    struct traits<double>
     {
-        using Scalar = CommonScalar<LHS, RHS>;
+        using Scalar = double;
+        using is_leaf = std::true_type;
+    };
+
+    template <typename Callable, typename... Args>
+    struct traits<Expr<Callable, Args...>>
+    {
+        using Scalar = CommonScalar<Args...>;
+        using is_leaf = std::false_type;
     };
 }
