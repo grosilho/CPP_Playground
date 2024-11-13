@@ -36,9 +36,6 @@ namespace LinAlg
             , m_args(args...)
             , m_callable(callable)
         {
-            // bool same_size = (args.size() == ...);
-            // assert(same_size && "All matrices must have the same size.");
-
             this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
         }
 
@@ -48,6 +45,7 @@ namespace LinAlg
             const auto f = [this, i](const Args&... args) { return m_callable(subscript(args, i)...); };
             return std::apply(f, m_args);
         }
+
         Scalar operator[](int i, int j) const { return operator[](i*(this->m_cols) + j); }
 
         Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }

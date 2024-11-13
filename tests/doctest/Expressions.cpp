@@ -20,8 +20,11 @@ void test_el_wise_op_with_functor(FirstMat m1, OtherMats... other_matrices)
 
     auto result = Fun_Mat(m1, other_matrices...);
 
+    FirstMat expected(m1.rows(), m1.cols());
     for (int i = 0; i < m1.size(); i++)
-        CHECK(Fun_Scalar(m1[i], other_matrices[i]...) == doctest::Approx(result[i]).epsilon(1e-10));
+        expected[i] = Fun_Scalar(m1[i], other_matrices[i]...);
+
+    CHECK(LinAlg::APPROX_EQ(result, expected));
 }
 
 // Unfortunately variable templates cannot be used as template template parameters, so we need to pass the function twice, once for the matrices and once for the scalars.
@@ -29,8 +32,12 @@ template <typename FunMat, typename FunScalar, typename FirstMat, typename... Ot
 void test_el_wise_op_with_function(FunMat fun_mat, FunScalar fun_scalar, FirstMat m1, OtherMats... other_matrices)
 {
     auto result = fun_mat(m1, other_matrices...);
+
+    FirstMat expected(m1.rows(), m1.cols());
     for (int i = 0; i < m1.size(); i++)
-        CHECK(fun_scalar(m1[i], other_matrices[i]...) == doctest::Approx(result[i]).epsilon(1e-10));
+        expected[i] = fun_scalar(m1[i], other_matrices[i]...);
+
+    CHECK(LinAlg::APPROX_EQ(result, expected));
 }
 
 // The functors below are used to test the element wise operations.
@@ -123,16 +130,13 @@ TEST_CASE("Matrix element wise operations")
     {
         LinAlg::Zero<Scalar> zero(rows, cols);
         Mat sum = m1 + zero;
-        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
-            CHECK(sum[i] == doctest::Approx(m1[i]).epsilon(1e-10));
+        CHECK(LinAlg::APPROX_EQ(sum, m1));
 
         Mat mult = m1 * zero;
-        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
-            CHECK(mult[i] == doctest::Approx(0).epsilon(1e-10));
+        CHECK(LinAlg::APPROX_EQ(mult, zero));
 
         Mat div = zero / m1;
-        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
-            CHECK(div[i] == doctest::Approx(0).epsilon(1e-10));
+        CHECK(LinAlg::APPROX_EQ(div, zero));
     }
 
     SUBCASE("sum with identity")
@@ -170,10 +174,10 @@ TEST_CASE("Matrix-Matrix multiplication")
     int n1 = 12;
     int n2 = 6;
     int n3 = 18;
-    Mat m1a = LinAlg::Matrix<Scalar>::randn(n1, n2);
-    Mat m1b = LinAlg::Matrix<Scalar>::randn(n1, n2);
-    Mat m2a = LinAlg::Matrix<Scalar>::randn(n2, n3);
-    Mat m2b = LinAlg::Matrix<Scalar>::randn(n2, n3);
+    Mat m1a = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
+    Mat m1b = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
+    Mat m2a = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
+    Mat m2b = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
 
     SUBCASE("simple matrix-matrix")
     {
@@ -181,17 +185,39 @@ TEST_CASE("Matrix-Matrix multiplication")
 
         CHECK(result.rows() == n1);
         CHECK(result.cols() == n3);
-        for (int i = 0; i < result.rows(); ++i)
-            for (int j = 0; j < result.cols(); ++j)
-                CHECK(result[i, j] == doctest::Approx(getMatMultCoeff(m1a, m2a, i, j)).epsilon(1e-10));
+
+        Mat expected(n1, n3);
+        for (int i = 0; i < n1; ++i)
+            for (int j = 0; j < n3; ++j)
+                expected[i, j] = getMatMultCoeff(m1a, m2a, i, j);
+
+        CHECK(LinAlg::APPROX_EQ(result, expected));
     }
     SUBCASE("matrix-matrix of a sum and a difference")
     {
         Mat result = mat_mult(m1a + m1b, m2a - m2b);
         CHECK(result.rows() == n1);
         CHECK(result.cols() == n3);
-        for (int i = 0; i < result.rows(); ++i)
-            for (int j = 0; j < result.cols(); ++j)
-                CHECK(result[i, j] == doctest::Approx(getMatMultCoeff(m1a + m1b, m2a - m2b, i, j)).epsilon(1e-10));
+
+        Mat expected(n1, n3);
+        for (int i = 0; i < n1; ++i)
+            for (int j = 0; j < n3; ++j)
+                expected[i, j] = getMatMultCoeff(m1a + m1b, m2a - m2b, i, j);
+
+        CHECK(LinAlg::APPROX_EQ(result, expected));
+    }
+
+    SUBCASE("matrix-matrix of expression with pre evaluation")
+    {
+        Mat result = mat_mult<true>(m1a * m1b, m2a / m2b);
+        CHECK(result.rows() == n1);
+        CHECK(result.cols() == n3);
+
+        Mat expected(n1, n3);
+        for (int i = 0; i < n1; ++i)
+            for (int j = 0; j < n3; ++j)
+                expected[i, j] = getMatMultCoeff(m1a * m1b, m2a / m2b, i, j);
+
+        CHECK(LinAlg::APPROX_EQ(result, expected));
     }
 }

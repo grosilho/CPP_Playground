@@ -147,20 +147,10 @@ TEST_CASE("Matrix::swap")
     LinAlg::swap(m1, m2);
 
     CHECK_EQ(m1.shape(), m2_copy.shape());
-    for (int i = 0; i < m1.rows(); ++i)
-        for (int j = 0; j < m1.cols(); ++j)
-        {
-            CHECK(m1[i, j] == doctest::Approx(m2_copy[i, j]).epsilon(1e-12));
-            CHECK(m1[i * m1.cols() + j] == doctest::Approx(m1[i, j]).epsilon(1e-12));
-        }
+    CHECK(LinAlg::APPROX_EQ(m1, m2_copy));
 
     CHECK_EQ(m2.shape(), m1_copy.shape());
-    for (int i = 0; i < m2.rows(); ++i)
-        for (int j = 0; j < m2.cols(); ++j)
-        {
-            CHECK(m2[i, j] == doctest::Approx(m1_copy[i, j]).epsilon(1e-12));
-            CHECK(m2[i * m2.cols() + j] == doctest::Approx(m2[i, j]).epsilon(1e-12));
-        }
+    CHECK(LinAlg::APPROX_EQ(m2, m1_copy));
 }
 
 TEST_CASE("Matrix::set")
