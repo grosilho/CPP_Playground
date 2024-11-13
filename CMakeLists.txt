@@ -26,7 +26,11 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # ---------------------------------------------------------------------------------------
 add_library(compiler_flags INTERFACE)
 target_compile_features(compiler_flags INTERFACE cxx_std_23)
-target_compile_options(compiler_flags INTERFACE "-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused")
+set(RELEASE_COMPILE_OPTIONS "-O3;-fdiagnostics-color=always")
+set(DEBUG_COMPILE_OPTIONS "-Og;-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-fdiagnostics-color=always")
+target_compile_options(compiler_flags INTERFACE "$<$<CONFIG:Release,MinSizeRel>:${RELEASE_COMPILE_OPTIONS}>" "$<$<CONFIG:Debug>:${DEBUG_COMPILE_OPTIONS}>")
+#"-pedantic-errors;-Weffc++;-Wconversion;-Wsign-conversion;-Werror"
+                
 
 # Import dependencies
 # ---------------------------------------------------------------------------------------

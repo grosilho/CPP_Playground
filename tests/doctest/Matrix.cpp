@@ -1,4 +1,4 @@
-#include <LinAlg/Matrix.hpp>
+#include <LinAlg/Matrices.hpp>
 #include <doctest/doctest.h>
 #include <iostream>
 #include <string>
@@ -124,6 +124,17 @@ TEST_CASE("Matrix::Zero")
     for (int i = 0; i < m.rows(); ++i)
         for (int j = 0; j < m.cols(); ++j)
             CHECK_EQ(m[i, j], 0);
+}
+
+TEST_CASE("Matrix::randn")
+{
+    double min_abs_value = 1.0;
+    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(3, 4, 0., 1., min_abs_value);
+    CHECK_EQ(m.rows(), 3);
+    CHECK_EQ(m.cols(), 4);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            CHECK_GE(abs(m[i, j]), min_abs_value);
 }
 
 TEST_CASE("Matrix::swap")

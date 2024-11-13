@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LinAlg/Matrix/Derived.hpp>
+#include <LinAlg/Matrices/Matrix.hpp>
 
 namespace LinAlg
 {
@@ -29,7 +29,7 @@ namespace LinAlg
     class Expr : public MatrixBase<Expr<Callable, Args...>>
     {
       public:
-        using Scalar = CommonScalar<Args...>;
+        using Scalar = _implementation_details::CommonScalar<Args...>;
 
         Expr(Callable callable, const Args&... args)
             : MatrixBase<Expr<Callable, Args...>>(0, 0)
@@ -53,7 +53,7 @@ namespace LinAlg
         Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }
 
       private:
-        std::tuple<std::conditional_t<traits<Args>::is_leaf::value, const Args&, const Args>...> m_args;
+        std::tuple<std::conditional_t<_implementation_details::traits<Args>::is_leaf::value, const Args&, const Args>...> m_args;
         Callable m_callable;
     };
 
@@ -63,6 +63,8 @@ namespace LinAlg
         concept AllowedType = MatrixType<T> || ScalarType<T>;
         template <typename T, typename U>
         concept BothScalars = ScalarType<T> && ScalarType<U>;
+        template <typename T, typename U>
+        concept BothMatrices = MatrixType<T> && MatrixType<U>;
         template <typename LHS, typename RHS>
         concept AcceptedTypes = AllowedType<LHS> && AllowedType<RHS> && !BothScalars<LHS, RHS>;
     }
@@ -71,6 +73,9 @@ namespace LinAlg
         requires _implementation_details::AcceptedTypes<LHS, RHS>
     auto operator+(const LHS& lhs, const RHS& rhs)
     {
+        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+            assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for addition.");
+
         return Expr([](auto const& l, auto const& r) { return l + r; }, lhs, rhs);
     }
 
@@ -78,6 +83,9 @@ namespace LinAlg
         requires _implementation_details::AcceptedTypes<LHS, RHS>
     auto operator-(const LHS& lhs, const RHS& rhs)
     {
+        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+            assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for substraction.");
+
         return Expr([](auto const& l, auto const& r) { return l - r; }, lhs, rhs);
     }
 
@@ -85,6 +93,9 @@ namespace LinAlg
         requires _implementation_details::AcceptedTypes<LHS, RHS>
     auto operator*(const LHS& lhs, const RHS& rhs)
     {
+        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+            assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise multiplication.");
+
         return Expr([](auto const& l, auto const& r) { return l * r; }, lhs, rhs);
     }
 
@@ -92,6 +103,9 @@ namespace LinAlg
         requires _implementation_details::AcceptedTypes<LHS, RHS>
     auto operator/(const LHS& lhs, const RHS& rhs)
     {
+        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+            assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise division.");
+
         return Expr([](auto const& l, auto const& r) { return l / r; }, lhs, rhs);
     }
 }

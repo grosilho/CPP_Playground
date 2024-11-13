@@ -1,4 +1,4 @@
-#include <LinAlg/Matrix.hpp>
+#include <LinAlg/Matrices.hpp>
 #include <doctest/doctest.h>
 #include <functional>
 #include <iostream>
@@ -85,9 +85,9 @@ TEST_CASE("Matrix element wise operations")
     using Mat = LinAlg::Matrix<Scalar>;
     int rows = 5;
     int cols = 7;
-    Mat m1 = LinAlg::Matrix<Scalar>::randn(rows, cols);
-    Mat m2 = LinAlg::Matrix<Scalar>::randn(rows, cols);
-    Mat m3 = LinAlg::Matrix<Scalar>::randn(rows, cols);
+    Mat m1 = LinAlg::Matrix<Scalar>::randn(rows, cols, 0., 1., 1e-8);
+    Mat m2 = LinAlg::Matrix<Scalar>::randn(rows, cols, 0., 1., 1e-8);
+    Mat m3 = LinAlg::Matrix<Scalar>::randn(rows, cols, 0., 1., 1e-8);
 
     SUBCASE("sum two matrices") { test_el_wise_op_with_functor<test_sum>(m1, m2); }
     SUBCASE("sum three matrices") { test_el_wise_op_with_functor<test_sum>(m1, m2, m3); }
@@ -118,12 +118,45 @@ TEST_CASE("Matrix element wise operations")
         for (int i = 0; i < m1.rows() * m1.cols(); ++i)
             CHECK(sum[i] == doctest::Approx(m1[i] + scalar).epsilon(1e-10));
     }
+
+    SUBCASE("operations with zero")
+    {
+        LinAlg::Zero<Scalar> zero(rows, cols);
+        Mat sum = m1 + zero;
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            CHECK(sum[i] == doctest::Approx(m1[i]).epsilon(1e-10));
+
+        Mat mult = m1 * zero;
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            CHECK(mult[i] == doctest::Approx(0).epsilon(1e-10));
+
+        Mat div = zero / m1;
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            CHECK(div[i] == doctest::Approx(0).epsilon(1e-10));
+    }
+
+    SUBCASE("sum with identity")
+    {
+        Mat m = LinAlg::Matrix<Scalar>::randn(rows, rows);
+        LinAlg::Identity<Scalar> id(rows);
+        Mat sum = m + id;
+        for (int i = 0; i < m.rows() * m.cols(); ++i)
+            CHECK(sum[i] == doctest::Approx(m[i] + (i / m.cols() == i % m.cols())).epsilon(1e-10));
+
+        Mat mult = m * id;
+        for (int i = 0; i < m.rows() * m.cols(); ++i)
+            CHECK(mult[i] == doctest::Approx(m[i] * (i / m.cols() == i % m.cols())).epsilon(1e-10));
+
+        Mat div = id / m;
+        for (int i = 0; i < m.rows() * m.cols(); ++i)
+            CHECK(div[i] == doctest::Approx((i / m.cols() == i % m.cols()) / m[i]).epsilon(1e-10));
+    }
 }
 
 template <typename A, typename B>
-LinAlg::CommonScalar<A, B> getMatMultCoeff(const A& lhs, const B& rhs, int i, int j)
+auto getMatMultCoeff(const A& lhs, const B& rhs, int i, int j)
 {
-    using T = LinAlg::CommonScalar<A, B>;
+    using T = LinAlg::_implementation_details::CommonScalar<A, B>;
     T result = lhs[i, 0] * rhs[0, j];
     for (int k = 1; k < lhs.cols(); ++k)
         result += lhs[i, k] * rhs[k, j];

@@ -39,5 +39,5 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - std::optional
 
 
-### Previously implmented but removed
+### Previously implemented but removed
 - Modules: removed due to poor support

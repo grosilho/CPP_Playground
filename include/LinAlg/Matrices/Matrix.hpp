@@ -1,37 +1,45 @@
 #pragma once
 
-#include <LinAlg/Matrix/Base.hpp>
+#include <LinAlg/Matrices/Base.hpp>
 
 namespace LinAlg
 {
+    /**
+     * @brief A friend function to swap two Matrix objects.
+     *
+     * @tparam T
+     * @param lhs
+     * @param rhs
+     */
     template <typename T>
     void swap(Matrix<T>& lhs, Matrix<T>& rhs) noexcept;
 
-    // template <typename T>
-    // Matrix<T> mat_mult(const Matrix<T>& lhs, const Matrix<T>& rhs);
-
-    // template <typename Derived, typename OtherDerived, bool pre_eval_expr = true>
-    // Matrix<CommonScalar<Derived, OtherDerived>> mat_mult_new(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs);
-
+    /**
+     * @brief The main Matrix class.
+     *
+     * Represents a dense matrix with elements of type T.
+     *
+     * @tparam T
+     */
     template <typename T>
     class Matrix : public MatrixBase<Matrix<T>>
     {
       public:
         using Scalar = T;
-        Matrix(int rows, int cols);
-        Matrix(const Matrix& other);
-        Matrix(Matrix&& other) noexcept;
-        Matrix(std::initializer_list<std::initializer_list<T>> list);
+        Matrix(int rows, int cols);                                   ///< Construct a new Matrix object with the given dimensions.
+        Matrix(const Matrix& other);                                  ///< Copy constructor.
+        Matrix(Matrix&& other) noexcept;                              ///< Move constructor.
+        Matrix(std::initializer_list<std::initializer_list<T>> list); ///< Construct a new Matrix object from embedded initializer lists.
 
         template <typename OtherDerived>
-        Matrix(const MatrixBase<OtherDerived>& other) noexcept;
+        Matrix(const MatrixBase<OtherDerived>& other) noexcept; ///< Construct a new Matrix object from a MatrixBase object.
 
         ~Matrix() = default;
 
-        Matrix& operator=(Matrix other) noexcept;
+        Matrix& operator=(Matrix other) noexcept; ///< Copy assignment. Uses copy and swap idiom. Forces expressions to be evaluated.
 
         template <typename OtherDerived>
-        Matrix& operator=(const Matrix<OtherDerived>& other) noexcept;
+        Matrix& operator=(const Matrix<OtherDerived>& other) noexcept; ///< Copy assignment from a MatrixBase object. It forces expressions to be evaluated.
 
         friend void swap<T>(Matrix<T>& lhs, Matrix<T>& rhs) noexcept;
 
@@ -41,18 +49,16 @@ namespace LinAlg
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
         template <typename U>
-        Matrix<T> apply(const std::function<T(U)>& f);           ///< Applies the function f to all elements and returns the result.
+        Matrix<T> apply(const std::function<T(U)>& f) const;     ///< Applies the function f to all elements and returns the result in a new Matrix.
         Matrix<T>& apply_inplace(const std::function<T(T&)>& f); ///< Applies the function f to all elements inplace.
         Matrix<T>& zero();                                       ///< Sets all elements to zero.
         Matrix<T>& set(const T& val);                            ///< Sets all elements to val.
 
-        const Matrix<T>& eval() const;
+        const Matrix<T>& eval() const; ///< Dummy method returning a reference to *this. Needed for expressions but not here.
 
-        static Matrix<T> Zero(int n, int m); ///< Returns the zero Matrix of size n times m.
-        static Matrix<T> Identity(int n);    ///< Returns the identity Matrix of size n.
-        static Matrix<T> randn(int rows, int cols, T mean = 0, T stddev = 1, std::optional<int> seed = std::nullopt);
-
-        static const bool is_leaf { true };
+        static Matrix<T> Zero(int rows, int cols); ///< Returns the zero Matrix with given dimensions.
+        static Matrix<T> Identity(int n);          ///< Returns the identity Matrix of size n.
+        static Matrix<T> randn(int rows, int cols, T mean = 0, T stddev = 1, T min_abs_value = 0, std::optional<int> seed = std::nullopt);
 
       protected:
         std::unique_ptr<T[]> m_data;
@@ -173,11 +179,11 @@ namespace LinAlg
     }
 
     template <typename Derived, typename OtherDerived, bool pre_eval_expr = false>
-    Matrix<CommonScalar<Derived, OtherDerived>> mat_mult(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs)
+    Matrix<_implementation_details::CommonScalar<Derived, OtherDerived>> mat_mult(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs)
     {
         assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");
 
-        using T = CommonScalar<Derived, OtherDerived>;
+        using T = _implementation_details::CommonScalar<Derived, OtherDerived>;
         Matrix<T> result(lhs.rows(), rhs.cols());
 
         if constexpr (pre_eval_expr)
@@ -210,7 +216,7 @@ namespace LinAlg
 
     template <typename T>
     template <typename U>
-    Matrix<T> Matrix<T>::apply(const std::function<T(U)>& f)
+    Matrix<T> Matrix<T>::apply(const std::function<T(U)>& f) const
     {
         Matrix<T> result(this->m_rows, this->m_cols);
         std::ranges::transform(m_flattened, result.m_flattened.begin(), f);
@@ -238,9 +244,9 @@ namespace LinAlg
     }
 
     template <typename T>
-    Matrix<T> Matrix<T>::Zero(int n, int m)
+    Matrix<T> Matrix<T>::Zero(int rows, int cols)
     {
-        return Matrix<T>(n, m).zero();
+        return Matrix<T>(rows, cols).zero();
     }
 
     template <typename T>
@@ -253,15 +259,34 @@ namespace LinAlg
         return identity;
     }
 
+    /**
+     * @brief Returns a Matrix with coefficients sampled from a normal distribution.
+     *
+     * The min_abs_value parameter is used to ensure that the absolute value of the coefficients is greater or equal to this value.
+     * Used to avoid division by zero in some element wise operations.
+     *
+     * @tparam T type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param mean mean
+     * @param stddev standard deviation
+     * @param min_abs_value minimum allowed absolute value
+     * @param seed random seed
+     * @return Matrix<T>
+     */
     template <typename T>
-    Matrix<T> Matrix<T>::randn(int rows, int cols, T mean, T stddev, std::optional<int> seed)
+    Matrix<T> Matrix<T>::randn(int rows, int cols, T mean, T stddev, T min_abs_value, std::optional<int> seed)
     {
         std::mt19937 gen(seed.value_or(std::random_device()()));
         std::normal_distribution<double> dist(mean, stddev);
         Matrix<T> result(rows, cols);
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < cols; ++j)
+            {
                 result[i, j] = static_cast<T>(dist(gen));
+                while (abs(result[i, j]) < min_abs_value)
+                    result[i, j] = static_cast<T>(dist(gen));
+            }
         return result;
     }
 

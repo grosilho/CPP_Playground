@@ -1,17 +1,32 @@
 #pragma once
-#include <LinAlg/Matrix/ForwardDeclarations.hpp>
+#include <LinAlg/Matrices/ForwardDeclarations.hpp>
 #include <stdafx.hpp>
 
 namespace LinAlg
 {
+    /**
+     * @brief A friend function to swap two MatrixBase objects.
+     *
+     * @tparam Derived
+     * @param lhs
+     * @param rhs
+     */
+
     template <typename Derived>
     void swap(MatrixBase<Derived>& lhs, MatrixBase<Derived>& rhs) noexcept;
 
+    /**
+     * @brief A MatrixBase class for all matrix types.
+     *
+     * It uses CRTP, so Derived corresponds to the derived class. This is used to access the derived class in the base class at compile time.
+     *
+     * @tparam Derived
+     */
     template <typename Derived>
     class MatrixBase
     {
       public:
-        using Scalar = traits<Derived>::Scalar;
+        using Scalar = _implementation_details::traits<Derived>::Scalar;
 
         MatrixBase(int rows, int cols);
         MatrixBase(const MatrixBase& other);
@@ -35,8 +50,7 @@ namespace LinAlg
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
         const Derived& derived() const;
-
-        static const bool is_leaf { false };
+        Derived& derived();
 
       protected:
         int m_rows;
@@ -47,14 +61,17 @@ namespace LinAlg
 
 namespace LinAlg
 {
+
     /**
-     * @brief Construct a new MatrixBase given the number of rows and columns.
+     * @brief Construct a new MatrixBase< Derived> object
      *
-     * Allocates memory but does not initialize it.
+     * Memory allocation is done in derived class, if needed.
      *
+     * @tparam Derived
      * @param rows
      * @param cols
      */
+
     template <typename Derived>
     MatrixBase<Derived>::MatrixBase(int rows, int cols)
         : m_rows { rows }
@@ -76,6 +93,15 @@ namespace LinAlg
         swap(*this, other);
     }
 
+    /**
+     * @brief Reinit the object given new dimensions.
+     *
+     * Needed for when the dimensions are known only after construction.
+     *
+     * @tparam Derived
+     * @param rows
+     * @param cols
+     */
     template <typename Derived>
     void MatrixBase<Derived>::reinit(int rows, int cols)
     {
@@ -125,31 +151,37 @@ namespace LinAlg
     template <typename Derived>
     MatrixBase<Derived>::Scalar& MatrixBase<Derived>::operator[](int i, int j)
     {
-        return static_cast<Derived&>(*this)[i, j];
+        return derived()[i, j];
     }
 
     template <typename Derived>
     MatrixBase<Derived>::Scalar MatrixBase<Derived>::operator[](int i, int j) const
     {
-        return static_cast<const Derived&>(*this)[i, j];
+        return derived()[i, j];
     }
 
     template <typename Derived>
     MatrixBase<Derived>::Scalar& MatrixBase<Derived>::operator[](int i)
     {
-        return static_cast<Derived&>(*this)[i];
+        return derived()[i];
     }
 
     template <typename Derived>
     MatrixBase<Derived>::Scalar MatrixBase<Derived>::operator[](int i) const
     {
-        return static_cast<const Derived&>(*this)[i];
+        return derived()[i];
     }
 
     template <typename Derived>
     const Derived& MatrixBase<Derived>::derived() const
     {
         return static_cast<const Derived&>(*this);
+    }
+
+    template <typename Derived>
+    Derived& MatrixBase<Derived>::derived()
+    {
+        return static_cast<Derived&>(*this);
     }
 
 } // namespace LinAlg

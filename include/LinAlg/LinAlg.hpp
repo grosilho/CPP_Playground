@@ -1,3 +1,3 @@
 #pragma once
 
-#include <LinAlg/Matrix.hpp>
+#include <LinAlg/Matrices.hpp>
