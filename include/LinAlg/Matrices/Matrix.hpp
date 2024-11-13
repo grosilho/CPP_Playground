@@ -220,6 +220,7 @@ namespace LinAlg
     {
         Matrix<T> result(this->m_rows, this->m_cols);
         std::ranges::transform(m_flattened, result.m_flattened.begin(), f);
+
         return result;
     }
 

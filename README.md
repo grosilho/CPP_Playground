@@ -17,7 +17,7 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - cmake-format: similar for CMakeLists files
 - precompiled headers: for faster compilation
 
-## C++ language features and techniques employed
+## C++ features and techniques employed
 - templates
 - expression templates
 - variadic templates
@@ -30,6 +30,7 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - move semantics
 - lambda functions
 - if constexpr
+- std::unique_ptr
 - std::span
 - std::mdspan
 - std::ranges
@@ -37,6 +38,7 @@ A repository where I exercise with Modern C++ and use common CI tools. A linear 
 - std::conditional
 - std::initializer_list
 - std::optional
+- std::reference_wrapper
 
 
 ### Previously implemented but removed

@@ -1,3 +1,4 @@
+#pragma once
 #include <LinAlg/Matrices/Base.hpp>
 
 namespace LinAlg
