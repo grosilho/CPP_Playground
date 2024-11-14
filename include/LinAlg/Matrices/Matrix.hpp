@@ -178,49 +178,6 @@ namespace LinAlg
         return m_flattened[i];
     }
 
-    /**
-     * @brief A function to multiply two matrices.
-     *
-     * The pre_eval_expr parameter is used to force the evaluation of the expressions before the multiplication.
-     * This is useful since matrix multiplication need to access the elements of the matrices multiple times.
-     *
-     * The variadic template Args is used to accept any number of matrices, even though only two matrices are supported so far.
-     * The main reason for this is to allow for putting pre_eval_expr as the first parameter with default value.
-     *
-     * @tparam pre_eval_expr if true, the expressions are evaluated before the multiplication
-     * @tparam Args matrices types
-     * @param args matrices
-     * @return Matrix<T> with T being the common scalar type of the matrices
-     */
-    template <bool pre_eval_expr = false, typename... Args>
-    auto mat_mult(const Args&... args)
-    {
-        if constexpr (pre_eval_expr)
-            return mat_mult(args.derived().eval()...);
-        else
-        {
-            std::tuple<const Args&...> matrices { args... };
-            static_assert(std::tuple_size_v<decltype(matrices)> == 2, "Two matrices are needed for multiplication.");
-
-            auto& lhs = std::get<0>(matrices);
-            auto& rhs = std::get<1>(matrices);
-            assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");
-
-            using T = _implementation_details::CommonScalar<Args...>;
-            Matrix<T> res(lhs.rows(), rhs.cols());
-
-            for (int i = 0; i < lhs.rows(); ++i)
-                for (int j = 0; j < rhs.cols(); ++j)
-                {
-                    res[i, j] = lhs[i, 0] * rhs[0, j];
-                    for (int k = 1; k < lhs.cols(); ++k)
-                        res[i, j] += lhs[i, k] * rhs[k, j];
-                }
-
-            return std::move(res);
-        }
-    }
-
     template <typename T>
     Matrix<T>& Matrix<T>::apply_inplace(const std::function<T(T&)>& f)
     {

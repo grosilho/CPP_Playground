@@ -167,6 +167,17 @@ auto getMatMultCoeff(const A& lhs, const B& rhs, int i, int j)
     return result;
 }
 
+template <typename A, typename B>
+auto multiply_by_hand(const A& lhs, const B& rhs)
+{
+    using T = LinAlg::_implementation_details::CommonScalar<A, B>;
+    LinAlg::Matrix<T> result(lhs.rows(), rhs.cols());
+    for (int i = 0; i < lhs.rows(); ++i)
+        for (int j = 0; j < rhs.cols(); ++j)
+            result[i, j] = getMatMultCoeff(lhs, rhs, i, j);
+    return result;
+}
+
 TEST_CASE("Matrix-Matrix multiplication")
 {
     using Scalar = double;
@@ -174,10 +185,9 @@ TEST_CASE("Matrix-Matrix multiplication")
     int n1 = 12;
     int n2 = 6;
     int n3 = 18;
+    int n4 = 8;
     Mat m1a = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
-    Mat m1b = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
     Mat m2a = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
-    Mat m2b = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
 
     SUBCASE("simple matrix-matrix")
     {
@@ -186,38 +196,61 @@ TEST_CASE("Matrix-Matrix multiplication")
         CHECK(result.rows() == n1);
         CHECK(result.cols() == n3);
 
-        Mat expected(n1, n3);
-        for (int i = 0; i < n1; ++i)
-            for (int j = 0; j < n3; ++j)
-                expected[i, j] = getMatMultCoeff(m1a, m2a, i, j);
-
+        Mat expected = multiply_by_hand(m1a, m2a);
         CHECK(LinAlg::APPROX_EQ(result, expected));
     }
-    SUBCASE("matrix-matrix of a sum and a difference")
+    SUBCASE("matrix-matrix of expressions")
     {
-        Mat result = mat_mult(m1a + m1b, m2a - m2b);
-        CHECK(result.rows() == n1);
-        CHECK(result.cols() == n3);
+        Mat m1b = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
+        Mat m2b = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
+        SUBCASE("sum and diff")
+        {
+            Mat result = mat_mult(m1a + m1b, m2a - m2b);
+            CHECK(result.rows() == n1);
+            CHECK(result.cols() == n3);
 
-        Mat expected(n1, n3);
-        for (int i = 0; i < n1; ++i)
-            for (int j = 0; j < n3; ++j)
-                expected[i, j] = getMatMultCoeff(m1a + m1b, m2a - m2b, i, j);
+            Mat lhs = m1a + m1b;
+            Mat rhs = m2a - m2b;
+            Mat expected = multiply_by_hand(lhs, rhs);
+            CHECK(LinAlg::APPROX_EQ(result, expected));
+        }
+        SUBCASE("mult and div with pre evaluation")
+        {
+            Mat result = mat_mult<true>(m1a * m1b, m2a / m2b);
+            CHECK(result.rows() == n1);
+            CHECK(result.cols() == n3);
 
-        CHECK(LinAlg::APPROX_EQ(result, expected));
+            Mat lhs = m1a * m1b;
+            Mat rhs = m2a / m2b;
+            Mat expected = multiply_by_hand(lhs, rhs);
+            CHECK(LinAlg::APPROX_EQ(result, expected));
+        }
     }
-
-    SUBCASE("matrix-matrix of expression with pre evaluation")
+    SUBCASE("multiple matrices")
     {
-        Mat result = mat_mult<true>(m1a * m1b, m2a / m2b);
-        CHECK(result.rows() == n1);
-        CHECK(result.cols() == n3);
+        Mat m1b = LinAlg::Matrix<Scalar>::randn(n1, n2, 0., 1., 1e-8);
+        Mat m2b = LinAlg::Matrix<Scalar>::randn(n2, n3, 0., 1., 1e-8);
+        Mat m3a = LinAlg::Matrix<Scalar>::randn(n3, n4, 0., 1., 1e-8);
+        Mat m3b = LinAlg::Matrix<Scalar>::randn(n3, n4, 0., 1., 1e-8);
 
-        Mat expected(n1, n3);
-        for (int i = 0; i < n1; ++i)
-            for (int j = 0; j < n3; ++j)
-                expected[i, j] = getMatMultCoeff(m1a * m1b, m2a / m2b, i, j);
+        SUBCASE("three matrices")
+        {
+            Mat result = mat_mult(m1a, m2a, m3a);
+            CHECK(result.rows() == n1);
+            CHECK(result.cols() == n4);
 
-        CHECK(LinAlg::APPROX_EQ(result, expected));
+            Mat expected = multiply_by_hand(multiply_by_hand(m1a, m2a), m3a);
+            CHECK(LinAlg::APPROX_EQ(result, expected));
+        }
+
+        SUBCASE("three matrices with expressions and pre evaluation")
+        {
+            Mat result = mat_mult<true>(m1a + m1b, m2a - m2b, m3a * m3b);
+            CHECK(result.rows() == n1);
+            CHECK(result.cols() == n4);
+
+            Mat expected = multiply_by_hand(multiply_by_hand(m1a + m1b, m2a - m2b), m3a * m3b);
+            CHECK(LinAlg::APPROX_EQ(result, expected));
+        }
     }
 }

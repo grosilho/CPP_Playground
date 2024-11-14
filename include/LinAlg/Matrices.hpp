@@ -5,3 +5,4 @@
 #include <LinAlg/Matrices/HelperFunctions.hpp>
 #include <LinAlg/Matrices/HelperMatrices.hpp>
 #include <LinAlg/Matrices/Matrix.hpp>
+#include <LinAlg/Matrices/MatrixMultiplication.hpp>
