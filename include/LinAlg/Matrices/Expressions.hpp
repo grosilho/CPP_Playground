@@ -31,10 +31,11 @@ namespace LinAlg
       public:
         using Scalar = _implementation_details::CommonScalar<Args...>;
 
-        Expr(Callable callable, const Args&... args)
-            : MatrixBase<Expr<Callable, Args...>>(0, 0)
+        template <typename Func>
+        Expr(Func&& callable, const Args&... args)
+            : MatrixBase<Expr<Func, Args...>>(0, 0)
             , m_args(args...)
-            , m_callable(callable)
+            , m_callable(std::forward<Func>(callable))
         {
             this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
         }
@@ -55,6 +56,9 @@ namespace LinAlg
         Callable m_callable;
     };
 
+    template <typename Func, typename... Args>
+    Expr(Func&&, const Args&...) -> Expr<Func, Args...>;
+
     namespace _implementation_details
     {
         template <typename T>
@@ -74,7 +78,8 @@ namespace LinAlg
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for addition.");
 
-        return Expr([](auto const& l, auto const& r) { return l + r; }, lhs, rhs);
+        using T = _implementation_details::CommonScalar<LHS, RHS>;
+        return Expr([](const T& l, const T& r) { return l + r; }, lhs, rhs);
     }
 
     template <typename LHS, typename RHS>

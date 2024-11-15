@@ -176,19 +176,39 @@ TEST_CASE("Matrix::zero")
 
 TEST_CASE("Matrix::apply")
 {
-    LinAlg::Matrix<double> m { { 3.23, 5.453, 9.243 }, { 4.23, 9.23, 4.89 } };
+    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(3, 4);
 
-    std::function cos = [](double i) { return std::cos(i); };
-    LinAlg::Matrix<double> cos_m = m.apply(cos);
+    SUBCASE("with std::function as lvalue")
+    {
+        std::function cos = [](double i) { return std::cos(i); };
+        LinAlg::Matrix<double> cos_m = m.apply(cos);
 
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK(cos_m[i, j] == doctest::Approx(std::cos(m[i, j])).epsilon(1e-12));
+        for (int i = 0; i < m.rows(); ++i)
+            for (int j = 0; j < m.cols(); ++j)
+                CHECK(cos_m[i, j] == doctest::Approx(std::cos(m[i, j])).epsilon(1e-12));
+    }
+    SUBCASE("with std::function as rvalue")
+    {
+        LinAlg::Matrix<double> cos_m = m.apply(std::function<double(double)> { [](double i) { return std::cos(i); } });
+
+        for (int i = 0; i < m.rows(); ++i)
+            for (int j = 0; j < m.cols(); ++j)
+                CHECK(cos_m[i, j] == doctest::Approx(std::cos(m[i, j])).epsilon(1e-12));
+    }
+
+    SUBCASE("with lambda as rvalue")
+    {
+        LinAlg::Matrix<double> sin_m = m.apply([](double i) { return std::sin(i); });
+
+        for (int i = 0; i < m.rows(); ++i)
+            for (int j = 0; j < m.cols(); ++j)
+                CHECK(sin_m[i, j] == doctest::Approx(std::sin(m[i, j])).epsilon(1e-12));
+    }
 }
 
 TEST_CASE("Matrix::apply_inplace")
 {
-    LinAlg::Matrix<double> m { { 1.23, 3.54, 2.64, 90.45 }, { 3.23, 5.453, 9.243, 4.23 }, { 9.73, 4.89, 3.23, 5.453 } };
+    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(4, 5);
     LinAlg::Matrix<double> m_copy(m);
 
     std::function sin = [](double i) { return std::sin(i); };

@@ -5,7 +5,6 @@
 
 namespace LinAlg
 {
-
     template <typename Tuple>
     constexpr auto pop_front(Tuple tuple)
     {
@@ -14,9 +13,9 @@ namespace LinAlg
     }
 
     /**
-     * @brief A function to multiply two matrices.
+     * @brief A function to multiply multiple matrices.
      *
-     * The pre_eval_expr parameter is used to force the evaluation of the template expressions before the multiplication.
+     * The pre_eval_expr template parameter is used to force the evaluation of the template expressions before the multiplication.
      * This is useful since matrix multiplication need to access the elements of the matrices multiple times.
      *
      * The variadic template Args is used to accept any number of matrices.
@@ -53,12 +52,12 @@ namespace LinAlg
             return two_matrix_mult(std::get<0>(matrices), mat_mult_impl(pop_front(matrices)));
     }
 
-    template <typename Derived, typename OtherDerived>
-    auto two_matrix_mult(const MatrixBase<Derived>& lhs, const MatrixBase<OtherDerived>& rhs)
+    template <typename LHS, typename RHS>
+    auto two_matrix_mult(LHS&& lhs, RHS&& rhs)
     {
         assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");
 
-        using T = _implementation_details::CommonScalar<Derived, OtherDerived>;
+        using T = _implementation_details::CommonScalar<std::remove_cvref_t<LHS>, std::remove_cvref_t<RHS>>;
         Matrix<T> res(lhs.rows(), rhs.cols());
 
         for (int i = 0; i < lhs.rows(); ++i)
@@ -69,6 +68,6 @@ namespace LinAlg
                     res[i, j] += lhs[i, k] * rhs[k, j];
             }
 
-        return std::move(res);
+        return res;
     }
 }

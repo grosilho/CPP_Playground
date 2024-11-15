@@ -36,7 +36,7 @@ namespace LinAlg
 
         ~Matrix() = default;
 
-        Matrix& operator=(Matrix other) noexcept; ///< Copy assignment. Uses copy and swap idiom. Forces expressions to be evaluated.
+        Matrix& operator=(Matrix other) noexcept; ///< Copy assignment. Uses copy and swap idiom.
 
         template <typename OtherDerived>
         Matrix& operator=(const Matrix<OtherDerived>& other) noexcept; ///< Copy assignment from a MatrixBase object. It forces expressions to be evaluated.
@@ -48,11 +48,12 @@ namespace LinAlg
         Scalar& operator[](int i);             ///< Access the element i in the flattened matrix.
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
-        template <typename U>
-        Matrix<T> apply(const std::function<T(U)>& f) const;     ///< Applies the function f to all elements and returns the result in a new Matrix.
-        Matrix<T>& apply_inplace(const std::function<T(T&)>& f); ///< Applies the function f to all elements inplace.
-        Matrix<T>& zero();                                       ///< Sets all elements to zero.
-        Matrix<T>& set(const T& val);                            ///< Sets all elements to val.
+        template <typename Func>
+        Matrix<T> apply(Func&& f) const; ///< Applies the function f to all elements and returns the result in a new Matrix.
+        template <typename Func>
+        Matrix<T>& apply_inplace(Func&& f); ///< Applies the function f to all elements inplace.
+        Matrix<T>& zero();                  ///< Sets all elements to zero.
+        Matrix<T>& set(const T& val);       ///< Sets all elements to val.
 
         const Matrix<T>& eval() const; ///< Dummy method returning a reference to *this. Needed for expressions but not here.
 
@@ -179,7 +180,8 @@ namespace LinAlg
     }
 
     template <typename T>
-    Matrix<T>& Matrix<T>::apply_inplace(const std::function<T(T&)>& f)
+    template <typename Func>
+    Matrix<T>& Matrix<T>::apply_inplace(Func&& f)
     {
         std::function apply_f = [&f](T& i) { i = f(i); };
         std::ranges::for_each(m_flattened, apply_f);
@@ -187,8 +189,8 @@ namespace LinAlg
     }
 
     template <typename T>
-    template <typename U>
-    Matrix<T> Matrix<T>::apply(const std::function<T(U)>& f) const
+    template <typename Func>
+    Matrix<T> Matrix<T>::apply(Func&& f) const
     {
         Matrix<T> result(this->m_rows, this->m_cols);
         std::ranges::transform(m_flattened, result.m_flattened.begin(), f);
@@ -199,8 +201,7 @@ namespace LinAlg
     template <typename T>
     Matrix<T>& Matrix<T>::set(const T& val)
     {
-        std::function to_val = [&val](T&) -> T { return val; };
-        return apply_inplace(to_val);
+        return apply_inplace([&val](T&) -> T { return val; });
     }
 
     template <typename T>
@@ -212,8 +213,7 @@ namespace LinAlg
     template <typename T>
     Matrix<T>& Matrix<T>::zero()
     {
-        std::function to_zero = [](T&) -> T { return 0; };
-        return apply_inplace(to_zero);
+        return apply_inplace([](T&) -> T { return 0; });
     }
 
     template <typename T>
