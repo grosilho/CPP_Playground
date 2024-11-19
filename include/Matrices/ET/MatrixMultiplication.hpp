@@ -1,9 +1,9 @@
 #pragma once
 
-#include <LinAlg/Matrices/Matrix.hpp>
+#include <Matrices/ET/Matrix.hpp>
 #include <stdafx.hpp>
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
     template <typename Tuple>
     constexpr auto pop_front(Tuple tuple)

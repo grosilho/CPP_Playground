@@ -1,8 +1,9 @@
 #pragma once
 
-#include <LinAlg/Matrices/Base.hpp>
+#include <Matrices/ET/Base.hpp>
+#include <Matrices/ET/HelperMatrices.hpp>
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
     /**
      * @brief A friend function to swap two Matrix objects.
@@ -26,7 +27,7 @@ namespace LinAlg
     {
       public:
         using Scalar = T;
-        Matrix(int rows, int cols);                                   ///< Construct a new Matrix object with the given dimensions.
+        Matrix(int rows = 0, int cols = 0);                           ///< Construct a new Matrix object with the given dimensions.
         Matrix(const Matrix& other);                                  ///< Copy constructor.
         Matrix(Matrix&& other) noexcept;                              ///< Move constructor.
         Matrix(std::initializer_list<std::initializer_list<T>> list); ///< Construct a new Matrix object from embedded initializer lists.
@@ -57,8 +58,9 @@ namespace LinAlg
 
         const Matrix<T>& eval() const; ///< Dummy method returning a reference to *this. Needed for expressions but not here.
 
-        static Matrix<T> Zero(int rows, int cols); ///< Returns the zero Matrix with given dimensions.
-        static Matrix<T> Identity(int n);          ///< Returns the identity Matrix of size n.
+        static Matrix<T> Constant(int rows, int cols, const T& value); ///< Returns a Matrix with given dimensions and constant coefficients.
+        static Matrix<T> Zero(int rows, int cols);                     ///< Returns the zero Matrix with given dimensions.
+        static Matrix<T> Identity(int n);                              ///< Returns the identity Matrix of size n.
         static Matrix<T> randn(int rows, int cols, T mean = 0, T stddev = 1, T min_abs_value = 0, std::optional<int> seed = std::nullopt);
 
       protected:
@@ -68,7 +70,12 @@ namespace LinAlg
     };
 }
 
-namespace LinAlg
+/*
+    Implementation
+    -----------------------------------------------------------------------------------------
+*/
+
+namespace LinAlg::Matrices::ET
 {
     template <typename T>
     Matrix<T>::Matrix(int rows, int cols)
@@ -217,19 +224,21 @@ namespace LinAlg
     }
 
     template <typename T>
+    Matrix<T> Matrix<T>::Constant(int rows, int cols, const T& value)
+    {
+        return Matrix<T>(LinAlg::Matrices::ET::Constant<T>(rows, cols, value));
+    }
+
+    template <typename T>
     Matrix<T> Matrix<T>::Zero(int rows, int cols)
     {
-        return Matrix<T>(rows, cols).zero();
+        return Matrix<T>(LinAlg::Matrices::ET::Zero<T>(rows, cols));
     }
 
     template <typename T>
     Matrix<T> Matrix<T>::Identity(int n)
     {
-        Matrix<T> identity(n, n);
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < n; ++j)
-                identity[i, j] = static_cast<Scalar>(i == j);
-        return identity;
+        return Matrix<T>(LinAlg::Matrices::ET::Identity<T>(n));
     }
 
     /**

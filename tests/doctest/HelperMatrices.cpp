@@ -1,32 +1,36 @@
-#include <LinAlg/Matrices.hpp>
+#include <backends.hpp>
 #include <doctest/doctest.h>
 
-TEST_CASE("Zero matrix")
+TEST_CASE_TEMPLATE("Constant matrix", S, ET_type<double>)
 {
-    LinAlg::Zero<int> zero(3, 4);
-    CHECK_EQ(zero.rows(), 3);
-    CHECK_EQ(zero.cols(), 4);
-    CHECK_EQ(zero.size(), 12);
+    typename S::Scalar value = 29.12;
+    typename S::Constant cte(3, 4, value);
+    typename S::Matrix expected(3, 4);
+    for (int i = 0; i < cte.rows(); ++i)
+        for (int j = 0; j < cte.cols(); ++j)
+            expected[i, j] = value;
 
-    for (int i = 0; i < zero.rows(); ++i)
-        for (int j = 0; j < zero.cols(); ++j)
-        {
-            CHECK_EQ(zero[i * zero.cols() + j], 0);
-            CHECK_EQ(zero[i, j], 0);
-        }
+    CHECK(APPROX_EQ(cte, expected));
 }
 
-TEST_CASE("Identity Matrix")
+TEST_CASE_TEMPLATE("Zero matrix", S, ET_type<double>)
 {
-    LinAlg::Identity<int> identity(3);
-    CHECK_EQ(identity.rows(), 3);
-    CHECK_EQ(identity.cols(), 3);
-    CHECK_EQ(identity.size(), 9);
+    typename S::Zero zero(3, 4);
+    typename S::Matrix expected(3, 4);
+    for (int i = 0; i < zero.rows(); ++i)
+        for (int j = 0; j < zero.cols(); ++j)
+            expected[i, j] = 0;
 
+    CHECK(APPROX_EQ(zero, expected));
+}
+
+TEST_CASE_TEMPLATE("Identity Matrix", S, ET_type<double>)
+{
+    typename S::Identity identity(3);
+    typename S::Matrix expected(3, 3);
     for (int i = 0; i < identity.rows(); ++i)
         for (int j = 0; j < identity.cols(); ++j)
-        {
-            CHECK_EQ(identity[i * identity.cols() + j], i == j);
-            CHECK_EQ(identity[i, j], i == j);
-        }
+            expected[i, j] = static_cast<typename S::Matrix::Scalar>(i == j);
+
+    CHECK(APPROX_EQ(identity, expected));
 }

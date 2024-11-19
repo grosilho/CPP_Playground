@@ -1,12 +1,15 @@
 #pragma once
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
     template <typename Derived>
     class MatrixBase;
 
     template <typename T>
     class Matrix;
+
+    template <typename T>
+    class Constant;
 
     template <typename T>
     class Zero;
@@ -37,6 +40,13 @@ namespace LinAlg
         struct traits<double>
         {
             using Scalar = double;
+            using is_leaf = std::true_type;
+        };
+
+        template <typename T>
+        struct traits<Constant<T>>
+        {
+            using Scalar = T;
             using is_leaf = std::true_type;
         };
 

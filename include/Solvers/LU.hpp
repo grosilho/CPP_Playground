@@ -2,7 +2,7 @@
 
 #include <stdafx.hpp>
 
-namespace LinAlg
+namespace LinAlg::Solvers
 {
     template <typename Matrix>
     concept MatrixType = requires(Matrix m) {
@@ -29,9 +29,12 @@ namespace LinAlg
     };
 }
 
-// ------------------------------------------------------------------------------------------------
+/*
+    Implementation
+    -----------------------------------------------------------------------------------------
+*/
 
-namespace LinAlg
+namespace LinAlg::Solvers
 {
     template <MatrixType Matrix>
     LU<Matrix>::LU(const Matrix& m)

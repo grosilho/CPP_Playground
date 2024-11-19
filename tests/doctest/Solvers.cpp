@@ -1,59 +1,61 @@
-#include <LinAlg/Matrices.hpp>
-#include <LinAlg/Solvers.hpp>
+#include <Solvers/Solvers.hpp>
+#include <backends.hpp>
 #include <doctest/doctest.h>
 
-TEST_CASE("LU")
-{
-    using Matrix = LinAlg::Matrix<double>;
+using LinAlg::Solvers::LU;
 
+TEST_CASE_TEMPLATE("LU", S, ET_type<double>)
+{
     SUBCASE("Identity")
     {
         int n = 5;
-        Matrix Id = Matrix::Identity(n);
-        LinAlg::LU lu(Id);
+        typename S::Matrix Id = S::Matrix::Identity(n);
+        LU lu(Id);
 
         lu.factorize();
         auto [L, U] = lu.getLU();
 
-        Matrix m = LinAlg::mat_mult(L, U);
+        typename S::Matrix m = mat_mult(L, U);
 
-        CHECK(LinAlg::APPROX_EQ(m, Id));
+        CHECK(APPROX_EQ(m, Id));
     }
 
     SUBCASE("Two random matrices and solver reinit")
     {
-        Matrix m = Matrix::randn(5, 5);
-        LinAlg::LU lu(m);
+        typename S::Matrix m = S::Matrix::randn(5, 5);
+        LU lu(m);
 
         lu.factorize();
         auto [L, U] = lu.getLU();
 
-        Matrix res = LinAlg::mat_mult(L, U);
+        typename S::Matrix res = mat_mult(L, U);
 
-        CHECK(LinAlg::APPROX_EQ(m, res));
+        CHECK(APPROX_EQ(m, res));
 
-        m = Matrix::randn(20, 20, 10., 100.);
+        m = S::Matrix::randn(20, 20, 10., 100.);
         lu.reinit(m);
         lu.factorize();
         auto [L2, U2] = lu.getLU();
-        res = LinAlg::mat_mult(L2, U2);
-        CHECK(LinAlg::APPROX_EQ(m, res));
+        res = mat_mult(L2, U2);
+        CHECK(APPROX_EQ(m, res));
     }
 
     SUBCASE("Solve")
     {
-        Matrix A = Matrix::randn(5, 5);
-        Matrix b1 = Matrix::randn(5, 1);
-        Matrix b2 = Matrix::randn(5, 1);
+        typename S::Matrix A = S::Matrix::randn(5, 5);
+        typename S::Matrix b1 = S::Matrix::randn(5, 1, -10., 10., 0., 1);
+        typename S::Matrix b2 = S::Matrix::randn(5, 1, 10., 10., 0., 2);
 
-        LinAlg::LU lu(A);
+        CHECK(!APPROX_EQ(b1, b2));
 
-        Matrix x1 = lu.solve(b1);
-        Matrix Ax1 = LinAlg::mat_mult(A, x1);
-        CHECK(LinAlg::APPROX_EQ(Ax1, b1));
+        LU lu(A);
 
-        Matrix x2 = lu.solve(b2);
-        Matrix Ax2 = LinAlg::mat_mult(A, x2);
-        CHECK(LinAlg::APPROX_EQ(Ax2, b2));
+        typename S::Matrix x1 = lu.solve(b1);
+        typename S::Matrix Ax1 = mat_mult(A, x1);
+        CHECK(APPROX_EQ(Ax1, b1));
+
+        typename S::Matrix x2 = lu.solve(b2);
+        typename S::Matrix Ax2 = mat_mult(A, x2);
+        CHECK(APPROX_EQ(Ax2, b2));
     }
 }

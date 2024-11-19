@@ -1,8 +1,8 @@
 #pragma once
 
-#include <LinAlg/Matrices/Matrix.hpp>
+#include <Matrices/ET/Matrix.hpp>
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
     namespace _implementation_details
     {

@@ -36,4 +36,4 @@ target_compile_options(compiler_flags INTERFACE "$<$<CONFIG:Release,MinSizeRel>:
 # ---------------------------------------------------------------------------------------
 include(cmake/import_dependencies.cmake)
 
-add_subdirectory(include/LinAlg)
+add_subdirectory(include)

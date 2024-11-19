@@ -1,26 +1,26 @@
-#include <LinAlg/Matrices.hpp>
+#include <backends.hpp>
 #include <doctest/doctest.h>
 #include <iostream>
 #include <string>
 
-TEST_CASE("Matrix::shape,rows,cols")
+TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", Matrix, ET::Matrixd)
 {
-    LinAlg::Matrix<double> m1(3, 4);
+    Matrix m1(3, 4);
     CHECK_EQ(m1.rows(), 3);
     CHECK_EQ(m1.cols(), 4);
     CHECK_EQ(m1.shape(), std::make_pair<int, int>(3, 4));
     CHECK_EQ(m1.size(), 12);
 
-    LinAlg::Matrix<double> m2(5, 6);
+    Matrix m2(5, 6);
     CHECK_EQ(m2.rows(), 5);
     CHECK_EQ(m2.cols(), 6);
     CHECK_EQ(m2.shape(), std::make_pair<int, int>(5, 6));
     CHECK_EQ(m2.size(), 30);
 }
 
-TEST_CASE("Matrix::operator[]")
+TEST_CASE_TEMPLATE("Matrix::operator[]", Matrix, ET::Matrixi)
 {
-    LinAlg::Matrix<double> m(3, 4);
+    Matrix m(3, 4);
     for (int i = 0; i < m.rows(); ++i)
         for (int j = 0; j < m.cols(); ++j)
             m[i, j] = i * m.cols() + j;
@@ -33,211 +33,206 @@ TEST_CASE("Matrix::operator[]")
         }
 }
 
-TEST_CASE("Matrix::Matrix(std::initializer_list)")
+TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", Matrix, ET::Matrixd)
 {
-    LinAlg::Matrix<int> m { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 10, 11, 12 } };
-    CHECK_EQ(m.rows(), 4);
-    CHECK_EQ(m.cols(), 3);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK_EQ(m[i, j], i * m.cols() + j + 1);
+    SUBCASE("3x4")
+    {
+        Matrix m { { 1., 2., 3. }, { 4., 5., 6. }, { 7., 8., 9. }, { 10., 11., 12. } };
+        Matrix expected(4, 3);
+        for (int i = 0; i < m.rows(); ++i)
+            for (int j = 0; j < m.cols(); ++j)
+                expected[i, j] = i * m.cols() + j + 1;
 
-    LinAlg::Matrix<int> m2 = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 10, 11, 12 }, { 13, 14, 15 } };
-    CHECK_EQ(m2.rows(), 5);
-    CHECK_EQ(m2.cols(), 3);
-    for (int i = 0; i < m2.rows(); ++i)
-        for (int j = 0; j < m2.cols(); ++j)
-            CHECK_EQ(m2[i, j], i * m2.cols() + j + 1);
+        CHECK(APPROX_EQ(m, expected));
+    }
+    SUBCASE("5x3")
+    {
+        Matrix m;
+        m = { { 1., 2., 3. }, { 4., 5., 6. }, { 7., 8., 9. }, { 10., 11., 12. }, { 13., 14., 15. } };
+        Matrix expected(5, 3);
+        for (int i = 0; i < m.rows(); ++i)
+            for (int j = 0; j < m.cols(); ++j)
+                expected[i, j] = i * m.cols() + j + 1;
+
+        CHECK(APPROX_EQ(m, expected));
+    }
 }
 
-TEST_CASE("Matrix::copy and move")
+TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>)
 {
-    LinAlg::Matrix<int> m1 { { 2, 5, 4 }, { 8, 10, 3 }, { 9, 2, 6 }, { 7, 1, 3 } };
+    typename S::Matrix m1 { { 9, 6 }, { 2, 3 }, { 2, 6 }, { 2, 5 } };
+    typename S::Matrix m2 { { 4, 5, 7, 3, 7, 9, 2 }, { 3, 6, 2, 8, 10, 45, 6 } };
+    typename S::Matrix m1_copy(m1);
+    typename S::Matrix m2_copy(m2);
+
+    swap(m1, m2);
+
+    CHECK(APPROX_EQ(m1, m2_copy));
+    CHECK(APPROX_EQ(m2, m1_copy));
+}
+
+TEST_CASE_TEMPLATE("Matrix::copy and move", Matrix, ET::Matrixd)
+{
+    Matrix m1 { { 2.6, 5.4, 4.7 }, { 8.3, 10.8, 3.4 }, { 9.5, 2.4, 6.9 }, { 7.3, 1.5, 3.6 } };
 
     SUBCASE("copy constructor")
     {
-        LinAlg::Matrix<int> m2(m1);
-        CHECK_EQ(m1.shape(), m2.shape());
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-            {
-                CHECK_EQ(m2[i, j], m1[i, j]);
-                CHECK_EQ(m2[i * m2.cols() + j], m2[i, j]);
-            }
+        Matrix m2(m1);
+        CHECK(DEEP_APPROX_EQ(m1, m2));
     }
     SUBCASE("copy assignment")
     {
-        LinAlg::Matrix<int> m2(0, 0);
+        Matrix m2(0, 0);
         m2 = m1;
-        CHECK_EQ(m1.shape(), m2.shape());
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-            {
-                CHECK_EQ(m2[i, j], m1[i, j]);
-                CHECK_EQ(m2[i * m2.cols() + j], m2[i, j]);
-            }
+        CHECK(DEEP_APPROX_EQ(m1, m2));
     }
     SUBCASE("move constructor")
     {
-        LinAlg::Matrix<int> m1_copy(m1);
-        LinAlg::Matrix<int> m2(std::move(m1));
+        Matrix m1_copy(m1);
+        Matrix m2(std::move(m1));
         CHECK_EQ(m1.shape(), std::make_pair<int, int>(0, 0));
-        CHECK_EQ(m1_copy.shape(), m2.shape());
-        for (int i = 0; i < m1_copy.rows(); ++i)
-            for (int j = 0; j < m1_copy.cols(); ++j)
-            {
-                CHECK_EQ(m2[i, j], m1_copy[i, j]);
-                CHECK_EQ(m2[i * m2.cols() + j], m2[i, j]);
-            }
+        CHECK(DEEP_APPROX_EQ(m1_copy, m2));
     }
     SUBCASE("move assignment")
     {
-        LinAlg::Matrix<int> m1_copy(m1);
-        LinAlg::Matrix<int> m2(0, 0);
+        Matrix m1_copy(m1);
+        Matrix m2(0, 0);
         m2 = std::move(m1);
         CHECK_EQ(m1.shape(), std::make_pair<int, int>(0, 0));
-        CHECK_EQ(m1_copy.shape(), m2.shape());
-        for (int i = 0; i < m1_copy.rows(); ++i)
-            for (int j = 0; j < m1_copy.cols(); ++j)
-            {
-                CHECK_EQ(m2[i, j], m1_copy[i, j]);
-                CHECK_EQ(m2[i * m2.cols() + j], m2[i, j]);
-            }
+        CHECK(DEEP_APPROX_EQ(m1_copy, m2));
     }
 }
 
-TEST_CASE("Matrix::Identity")
+TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>)
 {
-    LinAlg::Matrix<int> m = LinAlg::Matrix<int>::Identity(3);
-    CHECK_EQ(m.rows(), 3);
-    CHECK_EQ(m.cols(), 3);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK_EQ(m[i, j], i == j);
+    typename S::Matrix m1 { { 3.23, 9.34, 10.34 }, { 4.23, 9.23, 4.89 } };
+
+    SUBCASE("copy")
+    {
+        typename S::OtherMatrix m2(m1);
+        CHECK(APPROX_EQ(m1, m2));
+    }
+    SUBCASE("assignment")
+    {
+        typename S::OtherMatrix m2 = S::OtherMatrix::Zero(m1.rows(), m1.cols());
+        m2 = m1;
+        CHECK(APPROX_EQ(m1, m2));
+    }
 }
 
-TEST_CASE("Matrix::Zero")
+TEST_CASE_TEMPLATE("Matrix::apply", Matrix, ET::Matrixd)
 {
-    LinAlg::Matrix<int> m = LinAlg::Matrix<int>::Zero(3, 4);
+    using Scalar = Matrix::Scalar;
+    const int rows = 4;
+    const int cols = 5;
+    Matrix m = Matrix::randn(rows, cols);
+
+    Scalar (&std_fun)(Scalar) = std::cos;
+
+    Matrix expected(rows, cols);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            expected[i, j] = std_fun(m[i, j]);
+
+    SUBCASE("with function pointer")
+    {
+        Matrix fun_m = m.apply(std_fun);
+        CHECK(APPROX_EQ(fun_m, expected));
+    }
+
+    SUBCASE("with std::function")
+    {
+        std::function fun { std_fun };
+
+        SUBCASE("with std::function as lvalue")
+        {
+            Matrix fun_m = m.apply(fun);
+            CHECK(APPROX_EQ(fun_m, expected));
+        }
+        SUBCASE("with std::function as rvalue")
+        {
+            Matrix fun_m = m.apply(std::move(fun));
+            CHECK(APPROX_EQ(fun_m, expected));
+        }
+    }
+
+    SUBCASE("with lambda expression")
+    {
+        Matrix fun_m = m.apply([](Scalar x) { return std_fun(x); });
+        CHECK(APPROX_EQ(fun_m, expected));
+    }
+}
+
+TEST_CASE_TEMPLATE("Matrix::apply_inplace", Matrix, ET::Matrixd)
+{
+    using Scalar = Matrix::Scalar;
+    const int rows = 4;
+    const int cols = 5;
+    Matrix m = Matrix::randn(rows, cols);
+    Matrix m_copy(m);
+
+    std::function fun = [](Scalar x) { return std::sin(x); };
+    m.apply_inplace(fun);
+
+    Matrix expected(rows, cols);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            expected[i, j] = fun(m_copy[i, j]);
+
+    CHECK(APPROX_EQ(m, expected));
+}
+
+TEST_CASE_TEMPLATE("Matrix::set", Matrix, ET::Matrixd)
+{
+    Matrix m(3, 4);
+    m.set(42);
+    Matrix expeceted(3, 4);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            expeceted[i, j] = 42;
+
+    CHECK(APPROX_EQ(m, expeceted));
+}
+
+TEST_CASE_TEMPLATE("Matrix::Constant", Matrix, ET::Matrixi)
+{
+    int value = 42;
+    Matrix m = Matrix::Constant(3, 4, value);
+    Matrix expected(3, 4);
+    expected.set(value);
+
+    CHECK(APPROX_EQ(m, expected));
+}
+
+TEST_CASE_TEMPLATE("Matrix::Zero", Matrix, ET::Matrixi)
+{
+    Matrix m = Matrix::Zero(3, 4);
     CHECK_EQ(m.rows(), 3);
     CHECK_EQ(m.cols(), 4);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK_EQ(m[i, j], 0);
+
+    Matrix expected(3, 4);
+    expected.set(0);
+    CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE("Matrix::randn")
+TEST_CASE_TEMPLATE("Matrix::Identity", Matrix, ET::Matrixi)
+{
+    Matrix m = Matrix::Identity(3);
+    Matrix expected(3, 3);
+    for (int i = 0; i < m.rows(); ++i)
+        for (int j = 0; j < m.cols(); ++j)
+            expected[i, j] = static_cast<Matrix::Scalar>(i == j);
+
+    CHECK(APPROX_EQ(m, expected));
+}
+
+TEST_CASE_TEMPLATE("Matrix::randn", Matrix, ET::Matrixd)
 {
     double min_abs_value = 1.0;
-    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(3, 4, 0., 1., min_abs_value);
+    Matrix m = Matrix::randn(3, 4, 0., 1., min_abs_value);
     CHECK_EQ(m.rows(), 3);
     CHECK_EQ(m.cols(), 4);
     for (int i = 0; i < m.rows(); ++i)
         for (int j = 0; j < m.cols(); ++j)
             CHECK_GE(abs(m[i, j]), min_abs_value);
-}
-
-TEST_CASE("Matrix::swap")
-{
-    LinAlg::Matrix<double> m1 { { 9, 6 }, { 2, 3 }, { 2, 6 }, { 2, 5 } };
-    LinAlg::Matrix<double> m2 { { 4, 5, 7, 3, 7, 9, 2 }, { 3, 6, 2, 8, 10, 45, 6 } };
-    LinAlg::Matrix<double> m1_copy(m1);
-    LinAlg::Matrix<double> m2_copy(m2);
-
-    LinAlg::swap(m1, m2);
-
-    CHECK_EQ(m1.shape(), m2_copy.shape());
-    CHECK(LinAlg::APPROX_EQ(m1, m2_copy));
-
-    CHECK_EQ(m2.shape(), m1_copy.shape());
-    CHECK(LinAlg::APPROX_EQ(m2, m1_copy));
-}
-
-TEST_CASE("Matrix::set")
-{
-    LinAlg::Matrix<int> m = LinAlg::Matrix<int>::Zero(3, 4);
-    m.set(42);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-        {
-            CHECK_EQ(m[i, j], 42);
-            CHECK_EQ(m[i * m.cols() + j], 42);
-        }
-}
-
-TEST_CASE("Matrix::zero")
-{
-    LinAlg::Matrix<int> m = LinAlg::Matrix<int>::Identity(3);
-    m.zero();
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK_EQ(m[i, j], 0);
-}
-
-TEST_CASE("Matrix::apply")
-{
-    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(3, 4);
-
-    SUBCASE("with std::function as lvalue")
-    {
-        std::function cos = [](double i) { return std::cos(i); };
-        LinAlg::Matrix<double> cos_m = m.apply(cos);
-
-        for (int i = 0; i < m.rows(); ++i)
-            for (int j = 0; j < m.cols(); ++j)
-                CHECK(cos_m[i, j] == doctest::Approx(std::cos(m[i, j])).epsilon(1e-12));
-    }
-    SUBCASE("with std::function as rvalue")
-    {
-        LinAlg::Matrix<double> cos_m = m.apply(std::function<double(double)> { [](double i) { return std::cos(i); } });
-
-        for (int i = 0; i < m.rows(); ++i)
-            for (int j = 0; j < m.cols(); ++j)
-                CHECK(cos_m[i, j] == doctest::Approx(std::cos(m[i, j])).epsilon(1e-12));
-    }
-
-    SUBCASE("with lambda as rvalue")
-    {
-        LinAlg::Matrix<double> sin_m = m.apply([](double i) { return std::sin(i); });
-
-        for (int i = 0; i < m.rows(); ++i)
-            for (int j = 0; j < m.cols(); ++j)
-                CHECK(sin_m[i, j] == doctest::Approx(std::sin(m[i, j])).epsilon(1e-12));
-    }
-}
-
-TEST_CASE("Matrix::apply_inplace")
-{
-    LinAlg::Matrix<double> m = LinAlg::Matrix<double>::randn(4, 5);
-    LinAlg::Matrix<double> m_copy(m);
-
-    std::function sin = [](double i) { return std::sin(i); };
-    m.apply_inplace(sin);
-
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            CHECK(m[i, j] == doctest::Approx(std::sin(m_copy[i, j])).epsilon(1e-12));
-}
-
-TEST_CASE("Matrix::copy from different type")
-{
-    LinAlg::Matrix<double> m1 { { 3.23, 9.34, 10.34 }, { 4.23, 9.23, 4.89 } };
-
-    SUBCASE("copy")
-    {
-        LinAlg::Matrix<int> m2(m1);
-
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-                CHECK_EQ(m2[i, j], static_cast<int>(m1[i, j]));
-    }
-    SUBCASE("assignment")
-    {
-        LinAlg::Matrix<int> m2 = LinAlg::Matrix<int>::Zero(m1.rows(), m1.cols());
-        m2 = m1;
-
-        for (int i = 0; i < m1.rows(); ++i)
-            for (int j = 0; j < m1.cols(); ++j)
-                CHECK_EQ(m2[i, j], static_cast<int>(m1[i, j]));
-    }
 }

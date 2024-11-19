@@ -1,8 +1,39 @@
 #pragma once
-#include <LinAlg/Matrices/Base.hpp>
+#include <Matrices/ET/Base.hpp>
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
+
+    /**
+     * @brief A class representing a matrix with constant elements.
+     *
+     * It doesn't allocate memory, except for holding the value, as all elements are known to have the same value.
+     * This is in contrast to Matrix<T>::Constant(int rows, int cols, int value), which allocates memory and fills it with value.
+     *
+     * @tparam T
+     */
+    template <typename T>
+    class Constant : public MatrixBase<Constant<T>>
+    {
+      public:
+        using Scalar = T;
+
+        Constant(int rows, int cols, const T& value)
+            : MatrixBase<Constant<T>>(rows, cols)
+            , m_value(value)
+        {
+        }
+
+        T operator[](int, int) const { return m_value; };
+        T operator[](int) const { return m_value; };
+
+        T operator[](int, int) { return m_value; };
+        T operator[](int) { return m_value; };
+
+      private:
+        T m_value;
+    };
+
     /**
      * @brief A class representing a zero matrix.
      *

@@ -1,8 +1,8 @@
 #pragma once
-#include <LinAlg/Matrices/ForwardDeclarations.hpp>
+#include <Matrices/ET/ForwardDeclarations.hpp>
 #include <stdafx.hpp>
 
-namespace LinAlg
+namespace LinAlg::Matrices::ET
 {
     /**
      * @brief A friend function to swap two MatrixBase objects.
@@ -59,7 +59,11 @@ namespace LinAlg
 
 } // namespace LinAlg
 
-namespace LinAlg
+/*
+    Implementation
+    -----------------------------------------------------------------------------------------
+*/
+namespace LinAlg::Matrices::ET
 {
 
     /**
