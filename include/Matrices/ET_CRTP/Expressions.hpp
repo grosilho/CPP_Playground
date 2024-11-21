@@ -7,10 +7,10 @@ namespace LinAlg::Matrices::ET_CRTP
     namespace _implementation_details
     {
         template <typename T>
-        concept MatrixType = std::is_base_of<MatrixBase<T>, std::decay_t<T>>::value;
+        concept MatrixType = std::is_base_of<MatrixBase<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>::value;
 
         template <typename T>
-        concept ScalarType = std::is_integral_v<T> || std::is_floating_point_v<T>;
+        concept ScalarType = std::is_integral_v<std::remove_cvref_t<T>> || std::is_floating_point_v<std::remove_cvref_t<T>>;
 
         template <MatrixType T>
         auto subscript(const T& t, int i)
@@ -31,10 +31,10 @@ namespace LinAlg::Matrices::ET_CRTP
       public:
         using Scalar = _implementation_details::CommonScalar<Args...>;
 
-        template <typename Func>
-        Expr(Func&& callable, const Args&... args)
-            : MatrixBase<Expr<Func, Args...>>(0, 0)
-            , m_args(args...)
+        template <typename Func, typename... Matrices>
+        Expr(Func&& callable, Matrices&&... mats)
+            : MatrixBase<Expr<Func, Matrices...>>(0, 0)
+            , m_args(std::forward<Matrices>(mats)...)
             , m_callable(std::forward<Func>(callable))
         {
             this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
@@ -52,12 +52,12 @@ namespace LinAlg::Matrices::ET_CRTP
         Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }
 
       private:
-        std::tuple<std::conditional_t<_implementation_details::traits<Args>::is_leaf::value, const Args&, const Args>...> m_args;
+        std::tuple<Args...> m_args;
         Callable m_callable;
     };
 
-    template <typename Func, typename... Args>
-    Expr(Func&&, const Args&...) -> Expr<Func, Args...>;
+    template <typename Func, typename... Matrices>
+    Expr(Func&&, Matrices&&...) -> Expr<Func, Matrices...>;
 
     namespace _implementation_details
     {
@@ -73,43 +73,43 @@ namespace LinAlg::Matrices::ET_CRTP
 
     template <typename LHS, typename RHS>
         requires _implementation_details::AcceptedTypes<LHS, RHS>
-    auto operator+(const LHS& lhs, const RHS& rhs)
+    auto operator+(LHS&& lhs, RHS&& rhs)
     {
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for addition.");
 
         using T = _implementation_details::CommonScalar<LHS, RHS>;
-        return Expr([](const T& l, const T& r) { return l + r; }, lhs, rhs);
+        return Expr([](const T& l, const T& r) { return l + r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
         requires _implementation_details::AcceptedTypes<LHS, RHS>
-    auto operator-(const LHS& lhs, const RHS& rhs)
+    auto operator-(LHS&& lhs, RHS&& rhs)
     {
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for substraction.");
 
-        return Expr([](auto const& l, auto const& r) { return l - r; }, lhs, rhs);
+        return Expr([](auto const& l, auto const& r) { return l - r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
         requires _implementation_details::AcceptedTypes<LHS, RHS>
-    auto operator*(const LHS& lhs, const RHS& rhs)
+    auto operator*(LHS&& lhs, RHS&& rhs)
     {
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise multiplication.");
 
-        return Expr([](auto const& l, auto const& r) { return l * r; }, lhs, rhs);
+        return Expr([](auto const& l, auto const& r) { return l * r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
         requires _implementation_details::AcceptedTypes<LHS, RHS>
-    auto operator/(const LHS& lhs, const RHS& rhs)
+    auto operator/(LHS&& lhs, RHS&& rhs)
     {
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise division.");
 
-        return Expr([](auto const& l, auto const& r) { return l / r; }, lhs, rhs);
+        return Expr([](auto const& l, auto const& r) { return l / r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
 }
