@@ -3,7 +3,7 @@ CPMAddPackage("gh:doctest/doctest@2.4.9")
 
 # get the sources
 file(
-  GLOB sources
+  GLOB_RECURSE sources
   RELATIVE ${CMAKE_CURRENT_LIST_DIR}
   CONFIGURE_DEPENDS "*.cpp"
 )
