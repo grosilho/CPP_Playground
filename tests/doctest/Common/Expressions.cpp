@@ -76,7 +76,7 @@ struct test_composition_3
     T operator()(T& a, T& b, T& c) { return (a * c + b / c) * c + a - b; };
 };
 
-TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_CRTP_type<double>)
 {
     using Scalar = S::Scalar;
     using Matrix = S::Matrix;
@@ -192,7 +192,7 @@ auto multiply_by_hand(const A& lhs, const B& rhs)
     return result;
 }
 
-TEST_CASE_TEMPLATE("Matrix-Matrix multiplication", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix-Matrix multiplication", S, ET_CRTP_type<double>)
 {
     using Matrix = S::Matrix;
 

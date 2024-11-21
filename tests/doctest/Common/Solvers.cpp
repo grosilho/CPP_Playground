@@ -4,7 +4,7 @@
 
 using LinAlg::Solvers::LU;
 
-TEST_CASE_TEMPLATE("LU", S, ET_type<double>)
+TEST_CASE_TEMPLATE("LU", S, ET_CRTP_type<double>)
 {
     SUBCASE("Identity")
     {
