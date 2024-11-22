@@ -26,16 +26,16 @@ namespace LinAlg::Matrices::ET
      * @return Matrix<T> with T being the common scalar type of the matrices
      */
     template <bool pre_eval_expr = false, typename... Args>
-    auto mat_mult(const Args&... args)
+    auto mat_mult(Args&&... args)
     {
         if constexpr (pre_eval_expr)
         {
-            auto matrices = std::make_tuple(args.eval()...);
+            std::tuple<decltype(std::forward<Args>(args).eval())...> matrices(std::forward<Args>(args).eval()...);
             return mat_mult_impl(matrices);
         }
         else
         {
-            std::tuple<const Args&...> matrices(args...);
+            std::tuple<Args...> matrices(std::forward<Args>(args)...);
             return mat_mult_impl(matrices);
         }
     }

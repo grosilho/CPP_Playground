@@ -49,7 +49,8 @@ namespace LinAlg::Matrices::ET
 
         Scalar operator[](int i, int j) const { return operator[](i*(this->m_cols) + j); }
 
-        Matrix<Scalar> eval() const { return Matrix<Scalar>(*this); }
+        Matrix<Scalar> eval() const& = delete;
+        Matrix<Scalar> eval() const&& { return Matrix<Scalar>(*this); }
 
       private:
         std::tuple<Args...> m_args;
