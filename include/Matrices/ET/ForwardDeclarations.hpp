@@ -2,7 +2,7 @@
 
 #include <stdafx.hpp>
 
-namespace LinAlg::Matrices::ET_CRTP
+namespace LinAlg::Matrices::ET
 {
     template <typename Derived>
     class MatrixBase;

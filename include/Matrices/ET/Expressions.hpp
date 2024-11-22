@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Matrices/ET_CRTP/Matrix.hpp>
+#include <Matrices/ET/Matrix.hpp>
 
-namespace LinAlg::Matrices::ET_CRTP
+namespace LinAlg::Matrices::ET
 {
     namespace _implementation_details
     {

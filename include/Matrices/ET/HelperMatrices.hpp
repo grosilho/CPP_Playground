@@ -1,7 +1,7 @@
 #pragma once
-#include <Matrices/ET_CRTP/Base.hpp>
+#include <Matrices/ET/Base.hpp>
 
-namespace LinAlg::Matrices::ET_CRTP
+namespace LinAlg::Matrices::ET
 {
 
     /**
