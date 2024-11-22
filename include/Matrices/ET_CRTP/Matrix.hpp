@@ -81,12 +81,9 @@ namespace LinAlg::Matrices::ET_CRTP
     Matrix<T>::Matrix(int rows, int cols)
         : MatrixBase<Matrix<T>>(rows, cols)
         , m_data { rows * cols > 0 ? std::make_unique<T[]>(rows * cols) : nullptr }
+        , m_matrix { m_data.get(), rows, cols }
+        , m_flattened { m_data.get(), (static_cast<std::size_t>(rows * cols)) }
     {
-        if (m_data)
-        {
-            m_matrix = stdex::mdspan<T, stdex::dextents<int, 2>>(m_data.get(), rows, cols);
-            m_flattened = std::span<T>(m_data.get(), (rows * cols));
-        }
     }
 
     template <typename T>
