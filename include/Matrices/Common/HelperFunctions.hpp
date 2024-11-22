@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LinAlg::Common
+namespace LinAlg::Matrices::Common
 {
     /**
      * @brief Check if two matrices are approximately equal.

@@ -1,8 +1,9 @@
 #pragma once
-#include <Matrices/ET/ForwardDeclarations.hpp>
+
+#include <Matrices/Common/ForwardDeclarations.hpp>
 #include <stdafx.hpp>
 
-namespace LinAlg::Matrices::ET
+namespace LinAlg::Matrices::Common
 {
     /**
      * @brief A friend function to swap two MatrixBase objects.
@@ -77,7 +78,7 @@ namespace LinAlg::Matrices::ET
     Implementation
     -----------------------------------------------------------------------------------------
 */
-namespace LinAlg::Matrices::ET
+namespace LinAlg::Matrices::Common
 {
 
     /**
@@ -230,19 +231,19 @@ namespace LinAlg::Matrices::ET
     template <typename Derived>
     Derived MatrixBase<Derived>::Constant(int rows, int cols, const Scalar& value)
     {
-        return Derived(LinAlg::Matrices::ET::Constant<Scalar>(rows, cols, value));
+        return Derived(LinAlg::Matrices::Common::Constant<Scalar>(rows, cols, value));
     }
 
     template <typename Derived>
     Derived MatrixBase<Derived>::Zero(int rows, int cols)
     {
-        return Derived(LinAlg::Matrices::ET::Zero<Scalar>(rows, cols));
+        return Derived(LinAlg::Matrices::Common::Zero<Scalar>(rows, cols));
     }
 
     template <typename Derived>
     Derived MatrixBase<Derived>::Identity(int n)
     {
-        return Derived(LinAlg::Matrices::ET::Identity<Scalar>(n));
+        return Derived(LinAlg::Matrices::Common::Identity<Scalar>(n));
     }
 
     /**

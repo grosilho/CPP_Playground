@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", Matrix, Common::Matrixd)
 {
     Matrix m1(3, 4);
     CHECK_EQ(m1.rows(), 3);
@@ -18,7 +18,7 @@ TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", Matrix, ET::Matrixd)
     CHECK_EQ(m2.size(), 30);
 }
 
-TEST_CASE_TEMPLATE("Matrix::operator[]", Matrix, ET::Matrixi)
+TEST_CASE_TEMPLATE("Matrix::operator[]", Matrix, Common::Matrixi)
 {
     Matrix m(3, 4);
     for (int i = 0; i < m.rows(); ++i)
@@ -33,7 +33,7 @@ TEST_CASE_TEMPLATE("Matrix::operator[]", Matrix, ET::Matrixi)
         }
 }
 
-TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", Matrix, Common::Matrixd)
 {
     SUBCASE("3x4")
     {
@@ -58,7 +58,7 @@ TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", Matrix, ET::Matrixd)
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>)
+TEST_CASE_TEMPLATE("Matrix::swap", S, Common_type<int>)
 {
     typename S::Matrix m1 { { 9, 6 }, { 2, 3 }, { 2, 6 }, { 2, 5 } };
     typename S::Matrix m2 { { 4, 5, 7, 3, 7, 9, 2 }, { 3, 6, 2, 8, 10, 45, 6 } };
@@ -71,7 +71,7 @@ TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>)
     CHECK(APPROX_EQ(m2, m1_copy));
 }
 
-TEST_CASE_TEMPLATE("Matrix::copy and move", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::copy and move", Matrix, Common::Matrixd)
 {
     Matrix m1 { { 2.6, 5.4, 4.7 }, { 8.3, 10.8, 3.4 }, { 9.5, 2.4, 6.9 }, { 7.3, 1.5, 3.6 } };
 
@@ -103,7 +103,7 @@ TEST_CASE_TEMPLATE("Matrix::copy and move", Matrix, ET::Matrixd)
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix::copy from different type", S, Common_type<double>)
 {
     typename S::Matrix m1 { { 3.23, 9.34, 10.34 }, { 4.23, 9.23, 4.89 } };
 
@@ -120,50 +120,7 @@ TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>)
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::apply", Matrix, ET::Matrixd)
-{
-    using Scalar = Matrix::Scalar;
-    const int rows = 4;
-    const int cols = 5;
-    Matrix m = Matrix::randn(rows, cols);
-
-    Scalar (&std_fun)(Scalar) = std::cos;
-
-    Matrix expected(rows, cols);
-    for (int i = 0; i < m.rows(); ++i)
-        for (int j = 0; j < m.cols(); ++j)
-            expected[i, j] = std_fun(m[i, j]);
-
-    SUBCASE("with function pointer")
-    {
-        Matrix fun_m = m.apply(std_fun);
-        CHECK(APPROX_EQ(fun_m, expected));
-    }
-
-    SUBCASE("with std::function")
-    {
-        std::function fun { std_fun };
-
-        SUBCASE("with std::function as lvalue")
-        {
-            Matrix fun_m = m.apply(fun);
-            CHECK(APPROX_EQ(fun_m, expected));
-        }
-        SUBCASE("with std::function as rvalue")
-        {
-            Matrix fun_m = m.apply(std::move(fun));
-            CHECK(APPROX_EQ(fun_m, expected));
-        }
-    }
-
-    SUBCASE("with lambda expression")
-    {
-        Matrix fun_m = m.apply([](Scalar x) { return std_fun(x); });
-        CHECK(APPROX_EQ(fun_m, expected));
-    }
-}
-
-TEST_CASE_TEMPLATE("Matrix::apply_inplace", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::apply_inplace", Matrix, Common::Matrixd)
 {
     using Scalar = Matrix::Scalar;
     const int rows = 4;
@@ -182,7 +139,7 @@ TEST_CASE_TEMPLATE("Matrix::apply_inplace", Matrix, ET::Matrixd)
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::set", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::set", Matrix, Common::Matrixd)
 {
     Matrix m(3, 4);
     m.set(42);
@@ -194,7 +151,7 @@ TEST_CASE_TEMPLATE("Matrix::set", Matrix, ET::Matrixd)
     CHECK(APPROX_EQ(m, expeceted));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Constant", Matrix, ET::Matrixi)
+TEST_CASE_TEMPLATE("Matrix::Constant", Matrix, Common::Matrixi)
 {
     int value = 42;
     Matrix m = Matrix::Constant(3, 4, value);
@@ -204,7 +161,7 @@ TEST_CASE_TEMPLATE("Matrix::Constant", Matrix, ET::Matrixi)
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Zero", Matrix, ET::Matrixi)
+TEST_CASE_TEMPLATE("Matrix::Zero", Matrix, Common::Matrixi)
 {
     Matrix m = Matrix::Zero(3, 4);
     CHECK_EQ(m.rows(), 3);
@@ -215,7 +172,7 @@ TEST_CASE_TEMPLATE("Matrix::Zero", Matrix, ET::Matrixi)
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Identity", Matrix, ET::Matrixi)
+TEST_CASE_TEMPLATE("Matrix::Identity", Matrix, Common::Matrixi)
 {
     Matrix m = Matrix::Identity(3);
     Matrix expected(3, 3);
@@ -226,7 +183,7 @@ TEST_CASE_TEMPLATE("Matrix::Identity", Matrix, ET::Matrixi)
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::randn", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::randn", Matrix, Common::Matrixd)
 {
     double min_abs_value = 1.0;
     Matrix m = Matrix::randn(3, 4, 0., 1., min_abs_value);

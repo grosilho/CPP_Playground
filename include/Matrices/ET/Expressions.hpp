@@ -7,7 +7,8 @@ namespace LinAlg::Matrices::ET
     namespace _implementation_details
     {
         template <typename T>
-        concept MatrixType = std::is_base_of<MatrixBase<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>::value;
+        concept MatrixType = std::is_base_of_v<MatrixBase<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>
+            || std::is_same_v<Matrix<typename LinAlg::_implementation_details::traits<std::remove_cvref_t<T>>::Scalar>, std::remove_cvref_t<T>>;
 
         template <typename T>
         concept ScalarType = std::is_integral_v<std::remove_cvref_t<T>> || std::is_floating_point_v<std::remove_cvref_t<T>>;
@@ -29,7 +30,7 @@ namespace LinAlg::Matrices::ET
     class Expr : public MatrixBase<Expr<Callable, Args...>>
     {
       public:
-        using Scalar = _implementation_details::CommonScalar<Args...>;
+        using Scalar = LinAlg::_implementation_details::CommonScalar<Args...>;
 
         template <typename Func, typename... Matrices>
         Expr(Func&& callable, Matrices&&... mats)
@@ -40,9 +41,19 @@ namespace LinAlg::Matrices::ET
             this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
         }
 
+        Expr(int rows, int cols) = delete;
+        Expr(const Expr&) = delete;
+        Expr& operator=(const Expr&) = delete;
+
+        Expr(Expr&&) = default;
+        Expr& operator=(Expr&&) = default;
+
         Scalar operator[](int i) const
         {
             using _implementation_details::subscript;
+
+            static_assert((_implementation_details::ScalarType<Args> || ...) || (_implementation_details::MatrixType<Args> || ...), "Invalid type for subscripting.");
+
             const auto f = [this, i](const Args&... args) { return m_callable(subscript(args, i)...); };
             return std::apply(f, m_args);
         }
@@ -79,8 +90,7 @@ namespace LinAlg::Matrices::ET
         if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for addition.");
 
-        using T = _implementation_details::CommonScalar<LHS, RHS>;
-        return Expr([](const T& l, const T& r) { return l + r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
+        return Expr([](auto const& l, auto const& r) { return l + r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>

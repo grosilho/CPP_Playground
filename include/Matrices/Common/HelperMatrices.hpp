@@ -1,8 +1,12 @@
 #pragma once
-#include <Matrices/ET/Base.hpp>
+#include <Matrices/Common/Base.hpp>
+#include <Matrices/Common/Matrix.hpp>
 
-namespace LinAlg::Matrices::ET
+namespace LinAlg::Matrices::Common
 {
+    using Matrixd = Matrix<double>;
+    using Matrixf = Matrix<float>;
+    using Matrixi = Matrix<int>;
 
     /**
      * @brief A class representing a matrix with constant elements.
