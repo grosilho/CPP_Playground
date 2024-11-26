@@ -3,8 +3,9 @@
 #include <iostream>
 #include <string>
 
-TEST_CASE_TEMPLATE("Matrix::apply", Matrix, ET::Matrixd)
+TEST_CASE_TEMPLATE("Matrix::apply", S, ET_type<double>)
 {
+    using Matrix = S::Matrix;
     using Scalar = Matrix::Scalar;
     const int rows = 4;
     const int cols = 5;

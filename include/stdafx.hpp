@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <random>
+#include <ranges>
 #include <span>
 #include <tuple>
 #include <type_traits>

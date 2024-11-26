@@ -2,7 +2,7 @@
 
 #include <Matrices/Common/ForwardDeclarations.hpp>
 
-namespace LinAlg::Matrices::ET
+namespace LinAlg::Matrices::RG
 {
     template <typename Derived>
     using MatrixBase = LinAlg::Matrices::Common::MatrixBase<Derived>;
@@ -19,22 +19,18 @@ namespace LinAlg::Matrices::ET
     template <typename T>
     class Matrix;
 
-    template <typename Callable, typename... Args>
-    class Expr;
+    namespace _implementation_details
+    {
+        template <typename T>
+        class Container;
+    }
 }
 
 namespace LinAlg::_implementation_details
 {
-
     template <typename T>
-    struct traits<LinAlg::Matrices::ET::Matrix<T>>
+    struct traits<LinAlg::Matrices::RG::Matrix<T>>
     {
         using Scalar = T;
-    };
-
-    template <typename Callable, typename... Args>
-    struct traits<LinAlg::Matrices::ET::Expr<Callable, Args...>>
-    {
-        using Scalar = CommonScalar<Args...>;
     };
 }

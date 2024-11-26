@@ -1,7 +1,7 @@
 #include <backends.hpp>
 #include <doctest/doctest.h>
 
-TEST_CASE_TEMPLATE("Constant matrix", S, Common_type<double>)
+TEST_CASE_TEMPLATE("Constant matrix", S, ET_type<double>)
 {
     typename S::Scalar value = 29.12;
     typename S::Constant cte(3, 4, value);
@@ -13,7 +13,7 @@ TEST_CASE_TEMPLATE("Constant matrix", S, Common_type<double>)
     CHECK(APPROX_EQ(cte, expected));
 }
 
-TEST_CASE_TEMPLATE("Zero matrix", S, Common_type<double>)
+TEST_CASE_TEMPLATE("Zero matrix", S, ET_type<double>)
 {
     typename S::Zero zero(3, 4);
     typename S::Matrix expected(3, 4);
@@ -24,7 +24,7 @@ TEST_CASE_TEMPLATE("Zero matrix", S, Common_type<double>)
     CHECK(APPROX_EQ(zero, expected));
 }
 
-TEST_CASE_TEMPLATE("Identity Matrix", S, Common_type<double>)
+TEST_CASE_TEMPLATE("Identity Matrix", S, ET_type<double>)
 {
     typename S::Identity identity(3);
     typename S::Matrix expected(3, 3);

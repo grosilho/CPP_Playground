@@ -52,8 +52,6 @@ namespace LinAlg::Matrices::ET
         {
             using _implementation_details::subscript;
 
-            static_assert((_implementation_details::ScalarType<Args> || ...) || (_implementation_details::MatrixType<Args> || ...), "Invalid type for subscripting.");
-
             const auto f = [this, i](const Args&... args) { return m_callable(subscript(args, i)...); };
             return std::apply(f, m_args);
         }

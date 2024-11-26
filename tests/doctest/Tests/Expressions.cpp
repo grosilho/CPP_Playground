@@ -209,6 +209,15 @@ TEST_CASE_TEMPLATE("Matrix-Matrix multiplication", S, ET_type<double>)
         Matrix expected = multiply_by_hand<Matrix>(m1a, m2a);
         CHECK(DEEP_APPROX_EQ(result, expected));
     }
+    SUBCASE("matrix-expression")
+    {
+        Matrix m1b = Matrix::randn(n1, n2, 0., 1., 1e-8);
+        Matrix result = mat_mult(m1a + m1b, m2a);
+        Matrix lhs = m1a + m1b;
+        Matrix rhs = m2a;
+        Matrix expected = multiply_by_hand<Matrix>(lhs, rhs);
+        CHECK(DEEP_APPROX_EQ(result, expected));
+    }
     SUBCASE("matrix-matrix of expressions")
     {
         Matrix m1b = Matrix::randn(n1, n2, 0., 1., 1e-8);
