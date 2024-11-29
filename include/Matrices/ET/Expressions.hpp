@@ -1,25 +1,20 @@
 #pragma once
 
+#include <Matrices/ET/Concepts.hpp>
+#include <Matrices/ET/ForwardDeclarations.hpp>
 #include <Matrices/ET/Matrix.hpp>
 
 namespace LinAlg::Matrices::ET
 {
     namespace _implementation_details
     {
-        template <typename T>
-        concept MatrixType = std::is_base_of_v<MatrixBase<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>
-            || std::is_same_v<Matrix<typename LinAlg::_implementation_details::traits<std::remove_cvref_t<T>>::Scalar>, std::remove_cvref_t<T>>;
-
-        template <typename T>
-        concept ScalarType = std::is_integral_v<std::remove_cvref_t<T>> || std::is_floating_point_v<std::remove_cvref_t<T>>;
-
-        template <MatrixType T>
+        template <Concepts::MatrixType T>
         auto subscript(const T& t, int i)
         {
             return t[i];
         }
 
-        template <ScalarType T>
+        template <Concepts::ScalarType T>
         auto subscript(const T& t, int)
         {
             return t;
@@ -30,7 +25,7 @@ namespace LinAlg::Matrices::ET
     class Expr : public MatrixBase<Expr<Callable, Args...>>
     {
       public:
-        using Scalar = LinAlg::_implementation_details::CommonScalar<Args...>;
+        using Scalar = LinAlg::CommonScalar<Args...>;
 
         template <typename Func, typename... Matrices>
         Expr(Func&& callable, Matrices&&... mats)
@@ -69,53 +64,41 @@ namespace LinAlg::Matrices::ET
     template <typename Func, typename... Matrices>
     Expr(Func&&, Matrices&&...) -> Expr<Func, Matrices...>;
 
-    namespace _implementation_details
-    {
-        template <typename T>
-        concept AllowedType = MatrixType<T> || ScalarType<T>;
-        template <typename T, typename U>
-        concept BothScalars = ScalarType<T> && ScalarType<U>;
-        template <typename T, typename U>
-        concept BothMatrices = MatrixType<T> && MatrixType<U>;
-        template <typename LHS, typename RHS>
-        concept AcceptedTypes = AllowedType<LHS> && AllowedType<RHS> && !BothScalars<LHS, RHS>;
-    }
-
     template <typename LHS, typename RHS>
-        requires _implementation_details::AcceptedTypes<LHS, RHS>
+        requires Concepts::AcceptedTypes<LHS, RHS>
     auto operator+(LHS&& lhs, RHS&& rhs)
     {
-        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+        if constexpr (Concepts::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for addition.");
 
         return Expr([](auto const& l, auto const& r) { return l + r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
-        requires _implementation_details::AcceptedTypes<LHS, RHS>
+        requires Concepts::AcceptedTypes<LHS, RHS>
     auto operator-(LHS&& lhs, RHS&& rhs)
     {
-        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+        if constexpr (Concepts::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for substraction.");
 
         return Expr([](auto const& l, auto const& r) { return l - r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
-        requires _implementation_details::AcceptedTypes<LHS, RHS>
+        requires Concepts::AcceptedTypes<LHS, RHS>
     auto operator*(LHS&& lhs, RHS&& rhs)
     {
-        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+        if constexpr (Concepts::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise multiplication.");
 
         return Expr([](auto const& l, auto const& r) { return l * r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));
     }
 
     template <typename LHS, typename RHS>
-        requires _implementation_details::AcceptedTypes<LHS, RHS>
+        requires Concepts::AcceptedTypes<LHS, RHS>
     auto operator/(LHS&& lhs, RHS&& rhs)
     {
-        if constexpr (_implementation_details::BothMatrices<LHS, RHS>)
+        if constexpr (Concepts::BothMatrices<LHS, RHS>)
             assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() && "Matrix dimensions do not match for coefficient wise division.");
 
         return Expr([](auto const& l, auto const& r) { return l / r; }, std::forward<LHS>(lhs), std::forward<RHS>(rhs));

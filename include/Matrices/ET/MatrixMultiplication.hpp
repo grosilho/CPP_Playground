@@ -10,7 +10,7 @@ namespace LinAlg::Matrices::ET
     {
         assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");
 
-        using T = LinAlg::_implementation_details::CommonScalar<std::remove_cvref_t<LHS>, std::remove_cvref_t<RHS>>;
+        using T = LinAlg::CommonScalar<std::remove_cvref_t<LHS>, std::remove_cvref_t<RHS>>;
         Matrix<T> res(lhs.rows(), rhs.cols());
 
         for (int i = 0; i < lhs.rows(); ++i)

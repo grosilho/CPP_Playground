@@ -1,6 +1,6 @@
 #pragma once
+
 #include <Matrices/Common/Matrix.hpp>
-#include <Matrices/ET/ForwardDeclarations.hpp>
 
 namespace LinAlg::Matrices::ET
 {

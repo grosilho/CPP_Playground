@@ -27,7 +27,7 @@ namespace LinAlg::Matrices::RG
 namespace LinAlg::Matrices::RG::Concepts
 {
     template <typename T>
-    using traits = LinAlg::_implementation_details::traits<T>;
+    using traits = LinAlg::traits<T>;
 
     template <typename Derived>
     using MatrixBase = LinAlg::Matrices::Common::MatrixBase<Derived>;

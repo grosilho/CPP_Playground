@@ -20,21 +20,13 @@ namespace LinAlg::Matrices::Common
     class Identity;
 }
 
-namespace LinAlg::_implementation_details
+namespace LinAlg
 {
-
     template <typename T>
     struct traits;
 
     template <typename... Args>
     using CommonScalar = std::common_type_t<typename traits<std::remove_cvref_t<Args>>::Scalar...>;
-
-    template <typename Cont>
-    struct traits<LinAlg::Matrices::Common::Matrix<Cont>>
-    {
-        using Scalar = typename Cont::value_type;
-        using ContType = Cont;
-    };
 
     template <>
     struct traits<double>
@@ -55,6 +47,13 @@ namespace LinAlg::_implementation_details
     {
         using Scalar = int;
         using ContType = void;
+    };
+
+    template <typename Cont>
+    struct traits<LinAlg::Matrices::Common::Matrix<Cont>>
+    {
+        using Scalar = typename Cont::value_type;
+        using ContType = Cont;
     };
 
     template <typename T>

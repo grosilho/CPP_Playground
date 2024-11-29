@@ -26,7 +26,7 @@ namespace LinAlg::Matrices::RG
     class Container;
 }
 
-namespace LinAlg::_implementation_details
+namespace LinAlg
 {
     template <typename Cont>
     struct traits<LinAlg::Matrices::RG::MatrixCont<Cont>>

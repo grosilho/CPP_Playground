@@ -14,9 +14,8 @@ namespace LinAlg::Matrices::ET
     class Expr;
 }
 
-namespace LinAlg::_implementation_details
+namespace LinAlg
 {
-
     template <typename T>
     struct traits<LinAlg::Matrices::ET::Matrix<T>>
     {

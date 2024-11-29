@@ -30,7 +30,7 @@ namespace LinAlg::Matrices::Common
     class MatrixBase
     {
       public:
-        using Scalar = _implementation_details::traits<Derived>::Scalar;
+        using Scalar = traits<Derived>::Scalar;
 
         MatrixBase(int rows, int cols);
         MatrixBase(const MatrixBase& other);
