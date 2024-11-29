@@ -16,6 +16,9 @@ namespace LinAlg::Matrices::Common
     template <typename Derived>
     void swap(MatrixBase<Derived>& lhs, MatrixBase<Derived>& rhs) noexcept;
 
+    template <typename Derived>
+    std::ostream& operator<<(std::ostream& os, const MatrixBase<Derived>& mat);
+
     /**
      * @brief A MatrixBase class for all matrix types.
      *
@@ -50,6 +53,8 @@ namespace LinAlg::Matrices::Common
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
         const Derived& eval() const; ///< Dummy method returning a reference to *this. Needed in derived expressions but not here.
+
+        friend std::ostream& operator<< <Derived>(std::ostream& os, const MatrixBase& mat);
 
       protected:
         const Derived& derived() const;
@@ -194,6 +199,18 @@ namespace LinAlg::Matrices::Common
     Derived& MatrixBase<Derived>::derived()
     {
         return static_cast<Derived&>(*this);
+    }
+
+    template <typename Derived>
+    std::ostream& operator<<(std::ostream& os, const MatrixBase<Derived>& mat)
+    {
+        for (int i = 0; i < mat.rows(); ++i)
+        {
+            for (int j = 0; j < mat.cols(); ++j)
+                os << mat[i, j] << ' ';
+            os << '\n';
+        }
+        return os;
     }
 
 } // namespace LinAlg

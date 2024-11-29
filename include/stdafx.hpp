@@ -5,6 +5,7 @@
 #include <experimental/mdspan>
 #include <functional>
 #include <initializer_list>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <random>

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Matrices/Common/MatrixMultiplication.hpp>
-#include <Matrices/ET/ForwardDeclarations.hpp>
+#include <Matrices/RG/ForwardDeclarations.hpp>
 
-namespace LinAlg::Matrices::ET
+namespace LinAlg::Matrices::RG
 {
     template <typename LHS, typename RHS>
     auto two_matrix_mult(LHS&& lhs, RHS&& rhs)
@@ -16,10 +16,8 @@ namespace LinAlg::Matrices::ET
         for (int i = 0; i < lhs.rows(); ++i)
             for (int j = 0; j < rhs.cols(); ++j)
             {
-
-                res[i, j] = lhs[i, 0] * rhs[0, j];
-                for (int k = 1; k < lhs.cols(); ++k)
-                    res[i, j] += lhs[i, k] * rhs[k, j];
+                auto mult_view = std::views::zip(lhs.row(i), rhs.col(j)) | std::views::transform([](auto&& pair) { return std::get<0>(pair) * std::get<1>(pair); });
+                res[i, j] = std::reduce(mult_view.begin(), mult_view.end(), T(0), std::plus<>());
             }
 
         return res;

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-TEST_CASE_TEMPLATE("Matrix::apply", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix::apply", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = S::Matrix;
     using Scalar = Matrix::Scalar;

@@ -76,7 +76,7 @@ struct test_composition_3
     T operator()(T& a, T& b, T& c) { return (a * c + b / c) * c + a - b; };
 };
 
-TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>, RG_type<double>)
 {
     using Scalar = S::Scalar;
     using Matrix = S::Matrix;
@@ -101,10 +101,10 @@ TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>)
 
     SUBCASE("temporary object")
     {
-        auto sum(m1 + (m2 + m3));
+        auto sum(m3 + (m1 + (m2 + m3)));
         Matrix expected(rows, cols);
         for (int i = 0; i < m1.rows() * m1.cols(); ++i)
-            expected[i] = m1[i] + m2[i] + m3[i];
+            expected[i] = m1[i] + m2[i] + 2 * m3[i];
 
         CHECK(APPROX_EQ(sum, expected));
     }
@@ -132,6 +132,40 @@ TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>)
         CHECK(APPROX_EQ(div, zero));
     }
 
+    SUBCASE("operations with constant")
+    {
+        typename S::Scalar value = 3;
+        typename S::Constant cte(rows, cols, value);
+
+        SUBCASE("sum")
+        {
+            Matrix sum = m1 + cte;
+            Matrix expected(rows, cols);
+            for (int i = 0; i < rows; ++i)
+                for (int j = 0; j < cols; ++j)
+                    expected[i, j] = m1[i, j] + value;
+            CHECK(APPROX_EQ(sum, expected));
+        }
+        SUBCASE("mult")
+        {
+            Matrix mult = m1 * cte;
+            Matrix expected(rows, cols);
+            for (int i = 0; i < rows; ++i)
+                for (int j = 0; j < cols; ++j)
+                    expected[i, j] = m1[i, j] * value;
+            CHECK(APPROX_EQ(mult, expected));
+        }
+        SUBCASE("div")
+        {
+            Matrix div = m1 / cte;
+            Matrix expected(rows, cols);
+            for (int i = 0; i < rows; ++i)
+                for (int j = 0; j < cols; ++j)
+                    expected[i, j] = m1[i, j] / value;
+            CHECK(APPROX_EQ(div, expected));
+        }
+    }
+
     SUBCASE("operations with identity")
     {
         typename S::Identity id(rows);
@@ -144,6 +178,7 @@ TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>)
             for (int i = 0; i < rows; ++i)
                 for (int j = 0; j < rows; ++j)
                     expected[i, j] = m[i, j] + (i == j);
+
             CHECK(APPROX_EQ(sum, expected));
         }
 
@@ -192,7 +227,7 @@ auto multiply_by_hand(const A& lhs, const B& rhs)
     return result;
 }
 
-TEST_CASE_TEMPLATE("Matrix-Matrix multiplication", S, ET_type<double>)
+TEST_CASE_TEMPLATE("Matrix-Matrix multiplication", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = S::Matrix;
 

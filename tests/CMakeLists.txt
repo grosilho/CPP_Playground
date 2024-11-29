@@ -3,8 +3,7 @@
 # ../build/tests_Debug/main_coverage.info genhtml ../build/tests_Debug/main_coverage.info
 # --output-directory ../coverage_html
 
-# Minimum version 3.28, for C++20 modules support
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.28)
 
 # Define the project
 # --------------------------------------------------------------------

@@ -1,5 +1,4 @@
-# Minimum version 3.28, for C++20 modules support
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.28)
 
 # Define the project -----------------------------------------------------------
 project(
@@ -27,7 +26,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../cmake/import_dependencies.cmake)
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
 
 set(LOADING_METHOD
-    "4"
+    "1"
     CACHE STRING "Method to load LinAlg project"
 )
 

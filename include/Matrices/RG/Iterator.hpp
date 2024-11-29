@@ -69,11 +69,12 @@ namespace LinAlg::Matrices::RG::_implementation_details
         bool operator>=(const Iterator& other) const { return (*this > other) || (*this == other); }
         bool operator<(const Iterator& other) const { return !(*this >= other); }
 
-        reference operator[](difference_type n) const { return m_data + n; }
+        reference operator[](difference_type n) const { return *(m_data + n); }
 
       private:
         T* m_data { nullptr };
     };
 
+    static_assert(std::output_iterator<Iterator<int>, int>);
     static_assert(std::random_access_iterator<Iterator<int>>);
 }

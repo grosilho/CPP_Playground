@@ -1,0 +1,96 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config for library",        
+            "generator": "Ninja",
+            "binaryDir": "${fileDir}/build",
+            "installDir": "${fileDir}/install"
+        },
+        {
+            "name": "Release",
+            "displayName": "Release Config for library",        
+            "inherits": "default",
+            "binaryDir": "${fileDir}/build/Release",
+            "installDir": "${fileDir}/install_Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "Debug",
+            "displayName": "Debug Config for library",        
+            "inherits": "default",
+            "binaryDir": "${fileDir}/build/Debug",
+            "installDir": "${fileDir}/install_Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Release",
+            "configurePreset": "Release"
+        },
+        {
+            "name": "Debug",
+            "configurePreset": "Debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "output": {"outputOnFailure": true},
+            "execution": {"noTestsAction": "error", "stopOnFailure": true}
+        },
+        {
+            "name": "Release",            
+            "inherits": "default",
+            "configurePreset": "Release"
+        },
+        {
+            "name": "Debug",            
+            "inherits": "default",
+            "configurePreset": "Debug"
+        }
+    ],
+    "workflowPresets": [
+        {
+        "name": "Release",
+        "steps": [
+            {
+            "type": "configure",
+            "name": "Release"
+            },
+            {
+            "type": "build",
+            "name": "Release"
+            },
+            {
+            "type": "test",
+            "name": "Release"
+            }
+        ]
+        },
+        {
+        "name": "Debug",
+        "steps": [
+            {
+            "type": "configure",
+            "name": "Debug"
+            },
+            {
+            "type": "build",
+            "name": "Debug"
+            },
+            {
+             "type": "test",
+            "name": "Debug"
+            }
+        ]
+        }
+    ]
+  }

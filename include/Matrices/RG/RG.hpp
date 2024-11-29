@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Matrices/Common/Base.hpp>
-#include <Matrices/Common/HelperMatrices.hpp>
+#include <Matrices/RG/Expressions.hpp>
+#include <Matrices/RG/HelperMatrices.hpp>
 #include <Matrices/RG/Matrix.hpp>
-// #include <Matrices/ET/Expressions.hpp>
-// #include <Matrices/ET/MatrixMultiplication.hpp>
+#include <Matrices/RG/MatrixMultiplication.hpp>
+#include <Matrices/RG/MatrixView.hpp>
