@@ -15,9 +15,9 @@ The project aims to highlight the trade-offs and potential of different C++ para
 
 
 ## Main C++ features used in the backends
-- ET: templates, expression templates, variadic templates, variable templates, fold expressions, template template classes, curiously recurring template pattern, 
-- RG: std::ranges
-- All: lambda functions, std::function, concepts, copy and swap idiom, move semantics
+- All: templates, concepts, lambda functions, std::function, copy and swap idiom, move semantics, CRTP
+- ET: templates, expression templates, variadic templates, variable templates, fold expressions, template template classes, 
+- RG: std::ranges, std::views
 
 
 ## CI tools currently employed
