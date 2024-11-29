@@ -3,11 +3,9 @@
 #include <iostream>
 #include <string>
 
-namespace ImplDet = RG::_implementation_details;
-
 TEST_CASE("RG::Container")
 {
-    using Cont = ImplDet::Container<int>;
+    using Cont = RG::Container<int>;
 
     Cont c1(5);
     CHECK_EQ(c1.size(), 5);

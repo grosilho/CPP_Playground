@@ -6,6 +6,7 @@
 namespace LinAlg::Matrices::RG
 {
     template <typename LHS, typename RHS>
+        requires Concepts::BothMatrices<LHS, RHS>
     auto two_matrix_mult(LHS&& lhs, RHS&& rhs)
     {
         assert(lhs.cols() == rhs.rows() && "Matrix dimensions do not match for multiplication.");

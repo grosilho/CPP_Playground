@@ -5,13 +5,8 @@
 
 namespace LinAlg::Matrices::RG
 {
-    template <typename T>
-    using Container = _implementation_details::Container<T>;
-    template <typename T>
-    using Iterator = _implementation_details::Iterator<T>;
-
     template <typename Cont>
-        requires _implementation_details::sized_output_random_access_range<Cont>
+        requires Concepts::sized_output_random_access_range<Cont>
     class MatrixCont : public LinAlg::Matrices::Common::Matrix<Cont>, public _implementation_details::RangeWrapper<MatrixCont<Cont>>
     {
       public:

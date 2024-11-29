@@ -1,14 +1,10 @@
 #pragma once
-#include <Matrices/RG/ForwardDeclarations.hpp>
+
+#include <Matrices/RG/Concepts.hpp>
 #include <Matrices/RG/Iterator.hpp>
-#include <stdafx.hpp>
 
-namespace LinAlg::Matrices::RG::_implementation_details
+namespace LinAlg::Matrices::RG
 {
-
-    template <typename T>
-    class Container;
-
     template <typename T>
     void swap(Container<T>& first, Container<T>& second) noexcept;
 
@@ -23,7 +19,7 @@ namespace LinAlg::Matrices::RG::_implementation_details
         Container(int size = 0);
         Container(const Container& other);
         Container(Container&& other) noexcept;
-        template <sized_input_range R>
+        template <Concepts::sized_input_range R>
         Container(const R& range);
         ~Container() { delete[] m_data; }
 
@@ -69,7 +65,7 @@ namespace LinAlg::Matrices::RG::_implementation_details
     }
 
     template <typename T>
-    template <sized_input_range R>
+    template <Concepts::sized_input_range R>
     Container<T>::Container(const R& range)
         : Container(range.size())
     {
@@ -133,5 +129,5 @@ namespace LinAlg::Matrices::RG::_implementation_details
         return m_size;
     }
 
-    static_assert(sized_output_random_access_range<Container<int>>);
+    static_assert(Concepts::sized_output_random_access_range<Container<int>>);
 }

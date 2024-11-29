@@ -2,7 +2,7 @@
 
 #include <stdafx.hpp>
 
-namespace LinAlg::Matrices::RG::_implementation_details
+namespace LinAlg::Matrices::RG
 {
 
     template <typename T>

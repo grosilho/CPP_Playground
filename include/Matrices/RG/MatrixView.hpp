@@ -1,13 +1,9 @@
 #pragma once
 #include <Matrices/Common/Base.hpp>
-#include <Matrices/RG/Container.hpp>
 #include <Matrices/RG/ForwardDeclarations.hpp>
 
 namespace LinAlg::Matrices::RG
 {
-    template <typename T>
-    using Container = _implementation_details::Container<T>;
-
     template <std::ranges::view View>
     class MatrixView : public LinAlg::Matrices::Common::MatrixBase<MatrixView<View>>,
                        public _implementation_details::RangeWrapper<MatrixView<View>>,

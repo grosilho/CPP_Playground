@@ -1,57 +1,13 @@
 #pragma once
 
 #include <Matrices/Common/ForwardDeclarations.hpp>
-#include <Matrices/Common/HelperMatrices.hpp>
+#include <Matrices/RG/Concepts.hpp>
+#include <Matrices/RG/ImplementationDetails.hpp>
 
 namespace LinAlg::Matrices::RG
 {
-    namespace _implementation_details
-    {
-        template <typename T>
-        concept sized_input_range = std::ranges::sized_range<T> && std::ranges::input_range<T>;
-        template <typename T>
-        concept sized_output_random_access_range = std::ranges::sized_range<T> && std::ranges::output_range<T, typename T::value_type> && std::ranges::random_access_range<T>;
-
-        template <typename T>
-        class Container;
-
-        template <typename Derived>
-        class RangeWrapper
-        {
-          private:
-            Derived& derived() { return static_cast<Derived&>(*this); }
-            const Derived& derived() const { return static_cast<const Derived&>(*this); }
-
-          public:
-            auto begin() { return derived().data().begin(); }
-            auto end() { return derived().data().end(); }
-            auto begin() const { return derived().data().cbegin(); }
-            auto end() const { return derived().data().cend(); }
-            auto cbegin() const { return derived().data().cbegin(); }
-            auto cend() const { return derived().data().cend(); }
-
-            auto row(int i) const { return derived().data() | std::views::drop(i * derived().cols()) | std::views::take(derived().cols()); }
-            auto col(int j) const { return derived().data() | std::views::drop(j) | std::views::stride(derived().cols()) | std::views::take(derived().rows()); }
-        };
-
-        template <typename T>
-        auto constant_view(int rows, int cols, const T& value)
-        {
-            return std::views::repeat(T(value)) | std::views::take(rows * cols);
-        }
-
-        template <typename T>
-        auto identity_view(int n)
-        {
-            return std::views::iota(0, n * n) | std::views::transform([n](int i) { return static_cast<T>(i == (i / n) * (n + 1)); });
-        }
-    }
-
-    template <typename Derived>
-    using MatrixBase = LinAlg::Matrices::Common::MatrixBase<Derived>;
-
     template <typename Cont>
-        requires _implementation_details::sized_output_random_access_range<Cont>
+        requires Concepts::sized_output_random_access_range<Cont>
     class MatrixCont;
 
     template <std::ranges::view View>
@@ -66,6 +22,8 @@ namespace LinAlg::Matrices::RG
     template <typename T>
     class Identity;
 
+    template <typename T>
+    class Container;
 }
 
 namespace LinAlg::_implementation_details
