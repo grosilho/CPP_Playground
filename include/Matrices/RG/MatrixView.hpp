@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Matrices/Common/Base.hpp>
 #include <Matrices/RG/ForwardDeclarations.hpp>
 

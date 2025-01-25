@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <coroutine>
 #include <experimental/mdspan>
 #include <functional>
 #include <initializer_list>
