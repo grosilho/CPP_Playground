@@ -8,10 +8,13 @@ Currently, the library includes two backends:
 - Expression Templates (ET): An "old-school" implementation leveraging the well-established expression template technique.
 - Ranges Library (RG): A modern implementation utilizing the C++ ranges library to express mathematical operations in a clean and declarative style.
 
+Coroutines have been discarded due to inefficiend random access to matrix coefficients.
+
+<!-- 
 Next Steps
 - Implement a Third Backend: Explore the use of coroutines to build a new backend for lazy evaluation of mathematical expressions.
 - Benchmarking Framework: benchmark and compare the performance of all backends.
-The project aims to highlight the trade-offs and potential of different C++ paradigms while providing a lightweight framework for matrix operations.
+The project aims to highlight the trade-offs and potential of different C++ paradigms while providing a lightweight framework for matrix operations. -->
 
 
 ## Main C++ features used in the backends
