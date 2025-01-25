@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
 
@@ -20,7 +20,7 @@ TEST_CASE_TEMPLATE("Matrix::shape,rows,cols", S, ET_type<double>, RG_type<double
     CHECK_EQ(m2.size(), 30);
 }
 
-TEST_CASE_TEMPLATE("Matrix::operator[]", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::operator[]", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
 
@@ -37,7 +37,7 @@ TEST_CASE_TEMPLATE("Matrix::operator[]", S, ET_type<double>, RG_type<double>, CR
         }
 }
 
-TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
 
@@ -64,7 +64,7 @@ TEST_CASE_TEMPLATE("Matrix::Matrix(std::initializer_list)", S, ET_type<double>, 
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>, RG_type<int>, CR_type<int>)
+TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>, RG_type<int>)
 {
     typename S::Matrix m1 { { 9, 6 }, { 2, 3 }, { 2, 6 }, { 2, 5 } };
     typename S::Matrix m2 { { 4, 5, 7, 3, 7, 9, 2 }, { 3, 6, 2, 8, 10, 45, 6 } };
@@ -77,7 +77,7 @@ TEST_CASE_TEMPLATE("Matrix::swap", S, ET_type<int>, RG_type<int>, CR_type<int>)
     CHECK(APPROX_EQ(m2, m1_copy));
 }
 
-TEST_CASE_TEMPLATE("Matrix::copy and move", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::copy and move", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
 
@@ -111,7 +111,7 @@ TEST_CASE_TEMPLATE("Matrix::copy and move", S, ET_type<double>, RG_type<double>,
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>, RG_type<double>)
 {
     typename S::Matrix m1 { { 3.23, 9.34, 10.34 }, { 4.23, 9.23, 4.89 } };
 
@@ -128,7 +128,7 @@ TEST_CASE_TEMPLATE("Matrix::copy from different type", S, ET_type<double>, RG_ty
     }
 }
 
-TEST_CASE_TEMPLATE("Matrix::apply_inplace", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::apply_inplace", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
     using Scalar = Matrix::Scalar;
@@ -149,7 +149,7 @@ TEST_CASE_TEMPLATE("Matrix::apply_inplace", S, ET_type<double>, RG_type<double>,
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::set", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::set", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = typename S::Matrix;
 
@@ -163,7 +163,7 @@ TEST_CASE_TEMPLATE("Matrix::set", S, ET_type<double>, RG_type<double>, CR_type<d
     CHECK(APPROX_EQ(m, expeceted));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Constant", S, ET_type<int>, RG_type<int>, CR_type<int>)
+TEST_CASE_TEMPLATE("Matrix::Constant", S, ET_type<int>, RG_type<int>)
 {
     using Matrix = typename S::Matrix;
 
@@ -175,7 +175,7 @@ TEST_CASE_TEMPLATE("Matrix::Constant", S, ET_type<int>, RG_type<int>, CR_type<in
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Zero", S, ET_type<int>, RG_type<int>, CR_type<int>)
+TEST_CASE_TEMPLATE("Matrix::Zero", S, ET_type<int>, RG_type<int>)
 {
     using Matrix = typename S::Matrix;
 
@@ -188,7 +188,7 @@ TEST_CASE_TEMPLATE("Matrix::Zero", S, ET_type<int>, RG_type<int>, CR_type<int>)
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::Identity", S, ET_type<int>, RG_type<int>, CR_type<int>)
+TEST_CASE_TEMPLATE("Matrix::Identity", S, ET_type<int>, RG_type<int>)
 {
     using Matrix = typename S::Matrix;
 
@@ -201,7 +201,7 @@ TEST_CASE_TEMPLATE("Matrix::Identity", S, ET_type<int>, RG_type<int>, CR_type<in
     CHECK(APPROX_EQ(m, expected));
 }
 
-TEST_CASE_TEMPLATE("Matrix::randn", S, ET_type<int>, RG_type<int>, CR_type<int>)
+TEST_CASE_TEMPLATE("Matrix::randn", S, ET_type<int>, RG_type<int>)
 {
     using Matrix = typename S::Matrix;
 
@@ -214,7 +214,7 @@ TEST_CASE_TEMPLATE("Matrix::randn", S, ET_type<int>, RG_type<int>, CR_type<int>)
             CHECK_GE(abs(m[i, j]), min_abs_value);
 }
 
-TEST_CASE_TEMPLATE("Matrix::apply", S, ET_type<double>, RG_type<double>, CR_type<double>)
+TEST_CASE_TEMPLATE("Matrix::apply", S, ET_type<double>, RG_type<double>)
 {
     using Matrix = S::Matrix;
     using Scalar = Matrix::Scalar;
