@@ -24,9 +24,6 @@ namespace LinAlg::Matrices::RG
             std::copy_n(mat_view.begin(), this->rows() * this->cols(), this->begin());
         }
 
-        Cont& data() { return this->m_data; }
-        const Cont& data() const { return this->m_data; }
-
         template <typename Func>
         auto apply(Func&& f) const
         {

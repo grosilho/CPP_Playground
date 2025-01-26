@@ -36,6 +36,9 @@ namespace LinAlg::Matrices::Common
         Scalar& operator[](int i);             ///< Access the element i in the flattened matrix.
         Scalar operator[](int i) const;        ///< Access the element i in the flattened matrix.
 
+        Cont& data() { return this->m_data; }
+        const Cont& data() const { return this->m_data; }
+
         template <typename Func>
         Matrix<Cont>& apply_inplace(Func&& f); ///< Applies the function f to all elements inplace.
         Matrix<Cont>& zero();                  ///< Sets all elements to zero.

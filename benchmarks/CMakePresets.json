@@ -3,27 +3,24 @@
     "configurePresets": [
         {
             "name": "default",
-            "displayName": "Default Config for library",        
+            "displayName": "Default ${sourceDirName} build",        
             "generator": "Ninja",
-            "binaryDir": "${fileDir}/build",
-            "installDir": "${fileDir}/install"
+            "binaryDir": "${fileDir}/../build/${sourceDirName}"
         },
         {
             "name": "Release",
-            "displayName": "Release Config for library",        
+            "displayName": "Release Config for ${sourceDirName}",
             "inherits": "default",
-            "binaryDir": "${fileDir}/build/Release",
-            "installDir": "${fileDir}/install_Release",
+            "binaryDir": "${fileDir}/../build/${sourceDirName}_Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
             "name": "Debug",
-            "displayName": "Debug Config for library",        
+            "displayName": "Debug Config for ${sourceDirName}",
             "inherits": "default",
-            "binaryDir": "${fileDir}/build/Debug",
-            "installDir": "${fileDir}/install_Debug",
+            "binaryDir": "${fileDir}/../build/${sourceDirName}_Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -39,24 +36,6 @@
             "configurePreset": "Debug"
         }
     ],
-    "testPresets": [
-        {
-            "name": "default",
-            "configurePreset": "default",
-            "output": {"outputOnFailure": true},
-            "execution": {"noTestsAction": "error", "stopOnFailure": true}
-        },
-        {
-            "name": "Release",            
-            "inherits": "default",
-            "configurePreset": "Release"
-        },
-        {
-            "name": "Debug",            
-            "inherits": "default",
-            "configurePreset": "Debug"
-        }
-    ],
     "workflowPresets": [
         {
         "name": "Release",
@@ -67,10 +46,6 @@
             },
             {
             "type": "build",
-            "name": "Release"
-            },
-            {
-            "type": "test",
             "name": "Release"
             }
         ]
@@ -84,10 +59,6 @@
             },
             {
             "type": "build",
-            "name": "Debug"
-            },
-            {
-             "type": "test",
             "name": "Debug"
             }
         ]
