@@ -35,10 +35,10 @@ In both backends the underlying container for storing matrix and vector coeffici
 ## Performance Comparison
 This section presents the results of performance comparisons between the two backends. The analysis is divided into two parts.
 
+In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ real numbers; $f(x)=x^2+1$ a function applied element-wise to the matrices coefficients. Operators $+,-,*,/$ are applied element-wise, while @ represents the matrix-matrix multiplication.
+
 ### 1. **Comparison of Underlying Containers: STL VS CST**
 Here, we evaluate the performance difference between `std::vector` (STL) and the custom-made (CST) container. To do so, we first consider matrices using the RG backend and `std::vector` as underlying container, and perform some simple memory acces and/or modify operations on the coefficients. We consider different matrix sizes ($N$) and measure CPU time. We denote these experiments STL. Then we perform the same experiments using again matrices using the RG backend but with the custom-made container. We denote these experiments CST.
-
-In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ real numbers; $f(x)=x^2+1$ a function applied element-wise to the matrices coefficients. Operators $+,-,*,/$ are applied element-wise, while $@$ represents the matrix-matrix multiplication.
 
 <table align="center" style="border-collapse: collapse; border: none">
   <tr>
@@ -74,7 +74,6 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
 </table>
 
 
-
 ### 2. **Comparison of Backend Approaches: ET VS RG**
 In this subsection, we focus on the difference in performance between the classic expression templates (ET) approach and the modern ranges/views (RG) approach. We perform some linear algebra expressions on matrices using the ET and RG backends and compare the CPU times. In both cases, the underlying container is `std::vector`.
 
@@ -107,3 +106,14 @@ In this subsection, we focus on the difference in performance between the classi
     </td>
   </tr>
 </table>
+
+
+
+## Conclusion
+From the plots, we observe the following:
+
+1. At least for the very simple test cases evaluated here, the custom-made container is as efficient as the STL `std::vector` container. I do not claim that the custom container will always be as efficient. More extensive experiments, particularly those involving a variety of algorithms from the STL, would likely reveal that the custom-made container is slower in many situations. Nevertheless, these initial results demonstrate that for the specific use case tested, the custom implementation performs on par with the STL container.
+
+2. The two approaches, using expression templates (ET) and ranges/views (RG), exhibit very similar performance. This suggests that the modern ranges/views approach can be a viable alternative to expression templates for lazy evaluation of linear algebra operations, without incurring significant performance penalties.
+
+Of course, this is a small linear algebra library with limited functionalities and we performed tests on dense squared matrices of size $N$ at most 8192. Extending the library and the benchmarks may change the results.
