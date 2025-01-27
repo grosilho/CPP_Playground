@@ -3,7 +3,8 @@ from pathlib import Path
 from common import plot_results, extract_data
 
 benchmarks_path = Path(
-    "/home/giacomo/Dropbox/Ricerca/Codes/Learning_Codes/CPP_Playground/benchmarks/../build/benchmarks_Release"
+    # ""
+    "/home/giacomo/Dropbox/Ricerca/Codes/Learning_Codes/CPP_Playground/benchmarks"
 )
 # Load the json file
 with open(benchmarks_path / 'benchmarks.json', 'r') as f:
@@ -14,8 +15,8 @@ benchmarks = results["benchmarks"]
 
 benchmark_name = "operator[]"
 save_plots_to_disk = True
-show_plots = True
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+show_plots = False
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options = dict()
 plot_options["location"] = "upper left"
 plot_options["figure_title"] = benchmark_name
@@ -40,42 +41,42 @@ plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 
 benchmark_name = "copy_matrix"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]
 plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 benchmark_name = "apply_inplace_fun"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]
 plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 benchmark_name = "sum_four_mat"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]
 plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 benchmark_name = "mult_elwise_two_mat"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]
 plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 benchmark_name = "mult_two_mat"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]
 plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options)
 
 benchmark_name = "LU_factorization"
-output_file = Path(benchmarks_path / Path("images") / (benchmark_name + ".png"))
+output_file = Path(benchmarks_path / Path("results") / (benchmark_name + ".png"))
 plot_options["figure_title"] = benchmark_name
 plot_options["slopes"] = [[0], [10], [[0, 5]]]
 data = [extract_data(benchmarks, benchmark_name + "_ET"), extract_data(benchmarks, benchmark_name + "_RG")]

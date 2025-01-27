@@ -14,8 +14,8 @@ def extract_data(benchmarks, key):
     extracted = [benchmark for benchmark in benchmarks if key in benchmark["name"]]
     data = {"plot_label": key, "N": [], "cpu_time": []}
     for benchmark in extracted:
-        if "/" in benchmark["name"]:
-            N = int(benchmark["name"].split("/")[-1])
+        if "/" in benchmark["name"] and "BigO" not in benchmark["name"] and "RMS" not in benchmark["name"]:
+            N = int(benchmark["name"].split("/")[1])
             data["N"].append(N)
             data["cpu_time"].append(benchmark["cpu_time"])
         elif "BigO" in benchmark["name"]:
