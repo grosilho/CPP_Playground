@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdafx.hpp>
+
 namespace LinAlg::Matrices::Common
 {
     /**
@@ -63,5 +65,12 @@ namespace LinAlg::Matrices::Common
             }
 
         return true;
+    }
+
+    template <typename Tuple>
+    constexpr auto pop_front(Tuple tuple)
+    {
+        static_assert(std::tuple_size<Tuple>::value > 0, "Cannot pop from an empty tuple");
+        return std::apply([]<typename First, typename... Others>(First&&, Others&&... rest) { return std::tuple<Others...>(std::forward<Others>(rest)...); }, tuple);
     }
 }

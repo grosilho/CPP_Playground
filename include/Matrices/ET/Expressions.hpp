@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Matrices/Common/HelperFunctions.hpp>
 #include <Matrices/ET/Concepts.hpp>
 #include <Matrices/ET/ForwardDeclarations.hpp>
 #include <Matrices/ET/Matrix.hpp>
@@ -19,6 +20,20 @@ namespace LinAlg::Matrices::ET
         {
             return t;
         }
+
+        template <typename Tuple>
+        auto& first_matrix(const Tuple& tuple)
+        {
+            using LinAlg::Matrices::Common::pop_front;
+            constexpr int N_args = std::tuple_size_v<Tuple>;
+
+            static_assert(N_args > 0, "No matrices in the tuple.");
+
+            if constexpr (Concepts::MatrixType<decltype(std::get<0>(tuple))>)
+                return std::get<0>(tuple);
+            else
+                return first_matrix(pop_front(tuple));
+        }
     }
 
     template <typename Callable, typename... Args>
@@ -33,7 +48,8 @@ namespace LinAlg::Matrices::ET
             , m_args(std::forward<Matrices>(mats)...)
             , m_callable(std::forward<Func>(callable))
         {
-            this->reinit(std::get<0>(m_args).rows(), std::get<0>(m_args).cols());
+            auto& mat = _implementation_details::first_matrix(m_args);
+            this->reinit(mat.rows(), mat.cols());
         }
 
         Expr(int rows, int cols) = delete;

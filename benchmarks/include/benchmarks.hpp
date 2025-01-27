@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../include/Solvers/Solvers.hpp"
 #include "../tests/doctest/backends.hpp"
 
@@ -218,6 +220,27 @@ static void mult_four_matrices(benchmark::State& state)
     for (auto _ : state)
     {
         benchmark::DoNotOptimize(m5 = mat_mult(m1, m2, m3, m4));
+    }
+    state.SetComplexityN(state.range(0));
+}
+
+// Long Operation four matrices -----------------------------------------------------------------
+template <typename Matrix>
+static void long_op_matrices(benchmark::State& state)
+{
+    using Scalar = typename Matrix::Scalar;
+    Matrix m1 = Matrix::randn(state.range(0), state.range(0));
+    Matrix m2 = Matrix::randn(state.range(0), state.range(0));
+    Matrix m3 = Matrix::randn(state.range(0), state.range(0));
+    Matrix m4 = Matrix::randn(state.range(0), state.range(0));
+    Scalar s = 3.14;
+    Scalar r = 1.61;
+    Matrix m5;
+    std::function f = [](Scalar x) { return x * x + 1.; };
+
+    for (auto _ : state)
+    {
+        benchmark::DoNotOptimize(m5 = (m1 * (s + m2) + (m3 - r * m1) / m4.apply(f)));
     }
     state.SetComplexityN(state.range(0));
 }

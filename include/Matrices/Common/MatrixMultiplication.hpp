@@ -1,16 +1,10 @@
 #pragma once
 
+#include <Matrices/Common/HelperFunctions.hpp>
 #include <stdafx.hpp>
 
 namespace LinAlg::Matrices::Common
 {
-    template <typename Tuple>
-    constexpr auto pop_front(Tuple tuple)
-    {
-        static_assert(std::tuple_size<Tuple>::value > 0, "Cannot pop from an empty tuple");
-        return std::apply([](auto, auto... rest) { return std::make_tuple(rest...); }, tuple);
-    }
-
     /**
      * @brief A function to multiply multiple matrices.
      *

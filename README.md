@@ -1,42 +1,55 @@
-# C++ Playground
-This repository serves as a playground for experimenting with modern C++ features and continuous integration (CI) tools, with the added goal of testing and comparing their differences in practical applications.
 
-To achieve this, I designed a small linear algebra library featuring multiple backends, each implemented using distinct approaches and showcasing different C++ capabilities. A key requirement for all backends is that they must evaluate all mathematical expressions lazily to maximize performance and flexibility.
+# C++ linear algebra playground
 
-Currently, the library includes two backends:
+This repository implements a small linear algebra library in C++ with two distinct backends for performing operations on matrices and vectors. Both backends are designed to evaluate operations lazily, offering efficiency and flexibility.
 
-- Expression Templates (ET): An "old-school" implementation leveraging the well-established expression template technique.
-- Ranges Library (RG): A modern implementation utilizing the C++ ranges library to express mathematical operations in a clean and declarative style.
+---
 
-Coroutines have been discarded due to inefficiend random access to matrix coefficients.
+## Goals of the Project
 
-<!-- 
-Next Steps
-- Implement a Third Backend: Explore the use of coroutines to build a new backend for lazy evaluation of mathematical expressions.
-- Benchmarking Framework: benchmark and compare the performance of all backends.
-The project aims to highlight the trade-offs and potential of different C++ paradigms while providing a lightweight framework for matrix operations. -->
+### 1. Refreshing C++ Skills
+After spending a period working with Python, I wanted to refresh my C++ skills, focusing on modern and advanced techniques. This project utilizes features such as: ranges and views, concepts, expression templates, variadic templates and fold expressions, universal references, template template classes, among others.
+
+### 2. Exploring Modern C++ Development Tools
+The project also allowed me to refine my understanding and usage of modern development tools for C++: CMake, code coderage with lcov, unit testing with doctest, Ccache, github actions and containerization with Docker, precompiled headers.
+
+### 3. Comparing Backends for Lazy Evaluation
+The project sought to compare the efficiency of two backends designed for lazy evaluation of linear algebra operations:
+
+- The **established expression templates approach**.
+- The **modern ranges/views-based approach**.
+
+### 4. Investigating Custom (CST) Containers vs STL Containers
+Another key motivation was to explore whether a very simple user-implemented container could achieve the same level of efficiency as `std::vector`, the standard container for dynamic arrays in C++.
+
+---
+
+## Overview of the Backends
+
+1. **Expression Templates Backend (ET)**
+Implements linear algebra operations using the classic expression template approach.
+
+2. **Ranges and Views Backend (RG)**
+Leverages the modern C++ Ranges and Views library for lazy evaluation of operations.
+   
+In both backends the underlying container for storing matrix and vector coefficients is templetized. By default, ET uses `std::vector` and RG uses a custom container implemented from scratch. 
+
+## Performance Comparison
+This section presents the results of performance comparisons between the two backends. The analysis is divided into two parts:
+
+### 1. **Comparison of Underlying Containers: STL VS CST**
+Here, we evaluate the performance difference between `std::vector` (STL) and the custom-made (CST) container. To do so, we first consider matrices using the RG backend and `std::vector` as underlying container, and perform some simple memory acces and/or modify operations on the coefficients. We consider different matrix sizes (N) and measure CPU time. We denote these experiments STL. Then we perform the same experiments using again matrices using the RG backend but with the custom-made container. We denote these experiments CST.
 
 
-## Main C++ features used in the backends
-- All: templates, concepts, lambda functions, std::function, copy and swap idiom, move semantics, CRTP
-- ET: templates, expression templates, variadic templates, variable templates, fold expressions, template template classes, 
-- RG: std::ranges, std::views
+<table align="center">
+  <tr>
+    <td><img src="./benchmarks/results/copy_matrix.png" height="150"/><br><center><em>Matrix deep copy,</em></center></td>
+    <td><img src="./benchmarks/results/apply_inplace_fun.png" height="150"/><br><center><em>Apply f(x) to all coefficients,</em></center></td>
+  </tr>
+</table>
 
 
-## CI tools currently employed
-<!-- - CMake with CPM Package manager
-- Ccache: to cache compiled objects and speedup compilation, used both locally and in Github actions
-- Git
-- Github actions: for building, testing and running code coverage at each commit
-- Docker: used as virtual machine in the Github actions workflow
-- Caching the Docker image to avoid rebuilding it at each commit
-- lcov: for generating code coverage reports
-- codecov: dashboard to show code coverage results
-- CDash: dashboard for showing tests results
-- doctest: for the unit tests framework
-- Doxygen: for code documentation
-- clang-format: for nice and automatic C++ code formatting
-- cmake-format: similar for CMakeLists files
-- precompiled headers: for faster compilation -->
+### 2. **Comparison of Backend Approaches: ET VS RG**
+In this subsection, we focus on the difference in performance between the classic expression templates (ET) approach and the modern ranges/views (RG) approach. We perform some linear algebra expressions on matrices using the ET and RG backends and compare the CPU times. In both cases, the underlying container is `std::vector`.
 
-CMake, CPM Package Manager, Ccache, Git, Github actions, Docker, Caching Docker image, lcov, codecov, CDash, doctest, Doxyge, clang-format, cmake-format, precompiled headers.
+---

@@ -158,7 +158,7 @@ def plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options
         slope = big_o[0]
         for i, (j, fac, n) in enumerate(zip(*slopes)):
             ax1_np = np.array(ax1[j])
-            ax1_np = ax1_np[n[0] : n[1]]
+            ax1_np = ax1_np[n[0] : min(n[1], ax1_np.size)]
             ax.plot(
                 ax1_np,
                 # fac * min_ax2[j] * (ax1_np / ax1_np[-1]) ** slope,

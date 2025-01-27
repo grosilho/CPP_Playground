@@ -35,3 +35,15 @@ struct RG_type
     using Zero = RG::Zero<Scalar>;
     using Identity = RG::Identity<Scalar>;
 };
+
+template <typename T>
+struct RG_type_STL
+{
+    using Scalar = T;
+    using OtherScalar = std::conditional_t<std::is_integral_v<Scalar>, double, int>;
+    using Matrix = RG::MatrixCont<std::vector<Scalar>>;
+    using OtherMatrix = RG::Matrix<std::vector<OtherScalar>>;
+    using Constant = RG::Constant<Scalar>;
+    using Zero = RG::Zero<Scalar>;
+    using Identity = RG::Identity<Scalar>;
+};

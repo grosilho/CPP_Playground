@@ -112,11 +112,24 @@ TEST_CASE_TEMPLATE("Matrix element wise operations", S, ET_type<double>, RG_type
     SUBCASE("matrix + scalar")
     {
         Scalar scalar = 3.14;
-        auto sum = m1 + scalar;
+        auto sum = scalar + m1;
         Matrix expected(rows, cols);
         for (int i = 0; i < m1.rows() * m1.cols(); ++i)
             expected[i] = m1[i] + scalar;
         CHECK(APPROX_EQ(sum, expected));
+    }
+
+    SUBCASE("long expression")
+    {
+        Matrix m4 = Matrix::randn(rows, cols, 0., 1., 1e-8);
+        Scalar s = 3.14;
+        Scalar r = 1.61;
+        Matrix expected(rows, cols);
+        std::function f = [](Scalar x) { return x * x + 1.; };
+        Matrix result = m1 * (s + m2) + (m3 - r * m1) / m4.apply(f);
+        for (int i = 0; i < m1.rows() * m1.cols(); ++i)
+            expected[i] = m1[i] * (s + m2[i]) + (m3[i] - r * m1[i]) / f(m4[i]);
+        CHECK(APPROX_EQ(result, expected));
     }
 
     SUBCASE("operations with zero")
