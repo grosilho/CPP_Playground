@@ -94,6 +94,7 @@ def label_from_key(key):
 def plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options):
     location = plot_options["location"]
     legend_outside = plot_options["legend_outside"] if "legend_outside" in plot_options else False
+    print_figure_title = plot_options["print_figure_title"]
     figure_title = plot_options["figure_title"]
     show_legend = plot_options["show_legend"]
     logx = plot_options["logx"]
@@ -210,7 +211,7 @@ def plot_results(data, save_plots_to_disk, show_plots, output_file, plot_options
         else:
             ax.set_yticks(merged_ax2)
 
-    if figure_title != "":
+    if print_figure_title:
         ax.set_title(figure_title)
 
     ax.legend(loc=location, facecolor='white', framealpha=0.95)

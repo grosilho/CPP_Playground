@@ -21,6 +21,7 @@ show_plots = False
 output_file = Path(benchmarks_path / (benchmark_name + ".png"))
 plot_options = dict()
 plot_options["location"] = "upper left"
+plot_options["print_figure_title"] = False
 plot_options["figure_title"] = benchmark_name
 plot_options["with_legend"] = True
 plot_options["logx"] = True
