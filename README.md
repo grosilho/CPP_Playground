@@ -41,18 +41,22 @@ Here, we evaluate the performance difference between `std::vector` (STL) and the
 In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ real numbers; $f(x)=x^2+1$ a function applied element-wise to the matrices coefficients. Operators $+,-,*,/$ are applied element-wise, while $@$ represents the matrix-matrix multiplication.
 
 <div align="center" style="display: flex; justify-content: center; gap: 20px;">
+
   <div style="text-align: center;">
     <img height=170px src="./benchmarks/results/copy_matrix.png"/><br>
     <em>Matrix deep copy: A=B.</em>
   </div>
+
   <div style="text-align: center;">
     <img height=170px src="./benchmarks/results/set_operator.png"/><br>
     <em>Set operator: A[i,j] for all i,j.</em>
+
   </div>
   <div style="text-align: center;">
     <img height=170px src="./benchmarks/results/apply_inplace_fun.png"/><br>
     <em>Apply f(x) element-wise: f(A).</em>
   </div>
+
 </div>
 
 <table align="center" style="border-collapse: collapse; border: none">
