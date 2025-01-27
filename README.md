@@ -40,58 +40,88 @@ Here, we evaluate the performance difference between `std::vector` (STL) and the
 
 In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ real numbers; $f(x)=x^2+1$ a function applied element-wise to the matrices coefficients. Operators $+,-,*,/$ are applied element-wise, while $@$ represents the matrix-matrix multiplication.
 
-<table align="center", style="border-collapse: collapse; border: none; width:100%">
+<div align="center">
+
+<style>
+  table {
+    border-collapse: collapse;
+    border: none;
+    width: 100%;
+  }
+  td {
+    border: none;
+    text-align: center;
+    vertical-align: top;
+  }
+  img {
+    height: 150px;
+  }
+</style>
+
+<table>
   <tr>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/copy_matrix.png" height="150"/></center>
-    <center><em>Matrix deep copy: A=B.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/set_operator.png" height="150"/></center>
-    <center><em>Set operator: A[i,j] for all i,j.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/apply_inplace_fun.png" height="150"/></center>
-    <center><em>Apply f(x) element-wise: f(A).</em></center></td>
+    <td>
+    <img src="./benchmarks/results/copy_matrix.png"/><br>
+    <em>Matrix deep copy: A=B.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/set_operator.png"/><br>
+    <em>Set operator: A[i,j] for all i,j.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/apply_inplace_fun.png"/><br>
+    <em>Apply f(x) element-wise: f(A).</em>
+    </td>
   </tr>
 </table>
-<table align="center", style="border-collapse: collapse; border: none; width:100%">
+<table>
   <tr>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/LU_factorization.png" height="150"/></center>
-    <center><em>LU factorization of A.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/mult_four_mat.png" height="150"/></center>
-    <center><em>Matrices multiplication: A@B@C@D.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/long_op_1.png" height="150"/></center>
-    <center><em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em></center></td>
+    <td>
+    <img src="./benchmarks/results/LU_factorization.png"/><br>
+    <em>LU factorization of A.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/mult_four_mat.png"/><br>
+    <em>Matrices multiplication: A@B@C@D.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/long_op_1.png"/><br>
+    <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
+    </td>
   </tr>
 </table>
 
+</div>
 
 ### 2. **Comparison of Backend Approaches: ET VS RG**
 In this subsection, we focus on the difference in performance between the classic expression templates (ET) approach and the modern ranges/views (RG) approach. We perform some linear algebra expressions on matrices using the ET and RG backends and compare the CPU times. In both cases, the underlying container is `std::vector`.
 
 
-<table align="center", style="border-collapse: collapse; border: none; width:100%">
+<table>
   <tr>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/mult_elwise_two_mat.png" height="150"/></center>
-    <center><em>Element-wise multiplication: A*B.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/mult_with_scalar.png" height="150"/></center>
-    <center><em>Sum with scalar: A+s.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/mult_two_expr.png" height="150"/></center>
-    <center><em>Matrix multiplication of two expressions:<br>(A * B + C * D) @ (B * C - D * A).</em></center></td>
+    <td>
+    <img src="./benchmarks/results/mult_elwise_two_mat.png"/><br>
+    <em>Element-wise multiplication: A*B.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/mult_with_scalar.png"/><br>
+    <em>Sum with scalar: A+s.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/mult_two_expr.png"/><br>
+    <em>Matrix multiplication of two expressions:<br>(A * B + C * D) @ (B * C - D * A).</em>
+    </td>
   </tr>
 </table>
-<table align="center", border=0, style="width:66%">
+<table>
   <tr>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/sum_four_mat.png" height="150"/></center>
-    <center><em>Sum of four matrices: A+B+C+D.</em></center></td>
-    <td valign="top" style="border: none;">
-    <center><img src="./benchmarks/results/long_op_2.png" height="150"/></center>
-    <center><em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em></center></td>
+    <td>
+    <img src="./benchmarks/results/sum_four_mat.png"/><br>
+    <em>Sum of four matrices: A+B+C+D.</em>
+    </td>
+    <td>
+    <img src="./benchmarks/results/long_op_2.png"/><br>
+    <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
+    </td>
   </tr>
 </table>
