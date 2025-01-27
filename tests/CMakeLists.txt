@@ -1,7 +1,7 @@
 # Instructions: 1) conf, build, run tests 2) generate coverage report 3) generate html version.
-# cmake --workflow --preset Debug lcov -c -d ../build/tests_Debug -o
-# ../build/tests_Debug/main_coverage.info genhtml ../build/tests_Debug/main_coverage.info
-# --output-directory ../coverage_html
+# cmake --workflow --preset Debug 
+# lcov -c -d ../build/tests_Debug -o ../build/tests_Debug/main_coverage.info 
+# genhtml ../build/tests_Debug/main_coverage.info --output-directory ../coverage_html
 
 cmake_minimum_required(VERSION 3.28)
 

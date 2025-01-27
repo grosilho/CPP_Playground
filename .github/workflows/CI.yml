@@ -68,7 +68,7 @@ jobs:
       - name: Code coverage report generation
         run: | 
             ${{env.DOCKER_CONDA_RUN}} "lcov -c -d build/tests -o build/tests/main_coverage.info"
-            ${{env.DOCKER_CONDA_RUN}} "lcov --extract build/tests/main_coverage.info -o build/tests/filtered_coverage.info \"*LinAlg*\""
+            ${{env.DOCKER_CONDA_RUN}} "lcov -o build/tests/filtered_coverage.info --remove build/tests/main_coverage.info \"*Tests*\" \"*doctest*\" \"*linux-gnu*\" \"*c++*\""
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4      
