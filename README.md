@@ -41,34 +41,34 @@ Here, we evaluate the performance difference between `std::vector` (STL) and the
 In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ real numbers; $f(x)=x^2+1$ a function applied element-wise to the matrices coefficients. Operators $+,-,*,/$ are applied element-wise, while $@$ represents the matrix-matrix multiplication.
 
 
-<table style="border-collapse: collapse; border: none">
+<table align="center" style="border-collapse: collapse; border: none">
   <tr>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/copy_matrix.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 height=170 src="./benchmarks/results/copy_matrix.png"/><br>
     <em>Matrix deep copy: A=B.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/set_operator.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/set_operator.png"/><br>
     <em>Set operator: A[i,j] for all i,j.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/apply_inplace_fun.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/apply_inplace_fun.png"/><br>
     <em>Apply f(x) element-wise: f(A).</em>
     </td>
   </tr>
 </table>
-<table style="border-collapse: collapse; border: none">
+<table align="center" style="border-collapse: collapse; border: none">
   <tr>
     <td valign="top", style="text-align: center; border: none;">
-    <img src="./benchmarks/results/LU_factorization.png"/><br>
+    <img height=170 src="./benchmarks/results/LU_factorization.png"/><br>
     <em>LU factorization of A.</em>
     </td>
     <td valign="top", style="text-align: center; border: none;">
-    <img src="./benchmarks/results/mult_four_mat.png"/><br>
+    <img height=170 src="./benchmarks/results/mult_four_mat.png"/><br>
     <em>Matrices multiplication: A@B@C@D.</em>
     </td>
     <td valign="top", style="text-align: center; border: none;">
-    <img src="./benchmarks/results/long_op_1.png"/><br>
+    <img height=170 src="./benchmarks/results/long_op_1.png"/><br>
     <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
     </td>
   </tr>
@@ -80,30 +80,30 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
 In this subsection, we focus on the difference in performance between the classic expression templates (ET) approach and the modern ranges/views (RG) approach. We perform some linear algebra expressions on matrices using the ET and RG backends and compare the CPU times. In both cases, the underlying container is `std::vector`.
 
 
-<table style="border-collapse: collapse; border: none">
+<table align="center" style="border-collapse: collapse; border: none">
   <tr>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/mult_elwise_two_mat.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/mult_elwise_two_mat.png"/><br>
     <em>Element-wise multiplication: A*B.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/mult_with_scalar.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/mult_with_scalar.png"/><br>
     <em>Sum with scalar: A+s.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/mult_two_expr.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/mult_two_expr.png"/><br>
     <em>Matrix multiplication of two expressions:<br>(A * B + C * D) @ (B * C - D * A).</em>
     </td>
   </tr>
 </table>
-<table style="border-collapse: collapse; border: none">
+<table align="center" style="border-collapse: collapse; border: none">
   <tr>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/sum_four_mat.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/sum_four_mat.png"/><br>
     <em>Sum of four matrices: A+B+C+D.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
-    <img src="./benchmarks/results/long_op_2.png"/><br>
+    <td valign="top", style="text-align: center; border: none;">
+    <img height=170 src="./benchmarks/results/long_op_2.png"/><br>
     <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
     </td>
   </tr>
