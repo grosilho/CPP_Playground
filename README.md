@@ -52,7 +52,7 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
     <em>Set operator: A[i,j] for all i,j.</em>
 
   </div>
-  <div style="text-align: center;">
+  <div style="display: inline-block; text-align: center; margin: 0 10px;">
     <img height=100px src="./benchmarks/results/apply_inplace_fun.png"/><br>
     <em>Apply f(x) element-wise: f(A).</em>
   </div>
