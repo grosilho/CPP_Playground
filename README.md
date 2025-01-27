@@ -51,7 +51,7 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
   td {
     border: none;
     text-align: center;
-    valign: top;
+    vertical-align: top;
   }
   img {
     height: 150px;
@@ -76,15 +76,15 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
 </table>
 <table>
   <tr>
-    <td>
+    <td valign="top">
     <img src="./benchmarks/results/LU_factorization.png"/><br>
     <em>LU factorization of A.</em>
     </td>
-    <td>
+    <td valign="top">
     <img src="./benchmarks/results/mult_four_mat.png"/><br>
     <em>Matrices multiplication: A@B@C@D.</em>
     </td>
-    <td>
+    <td valign="top">
     <img src="./benchmarks/results/long_op_1.png"/><br>
     <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
     </td>
