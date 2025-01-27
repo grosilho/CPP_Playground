@@ -27,14 +27,14 @@ BENCHMARK(allocate_matrix<RG_type<double>::Matrix>)
 
 // Set operator -----------------------------------------------------------------
 BENCHMARK(set_operator<RG_type_STL<double>::Matrix>)
-    ->Name("operator[]_STL")
+    ->Name("set_operator_STL")
     ->MinTime(min_time)
     ->MinWarmUpTime(min_warmup_time)
     ->RangeMultiplier(range_mult)
     ->Range(range_min, squared_compl_range_max)
     ->Complexity(benchmark::oNSquared);
 BENCHMARK(set_operator<RG_type<double>::Matrix>)
-    ->Name("operator[]_CST")
+    ->Name("set_operator_CST")
     ->MinTime(min_time)
     ->MinWarmUpTime(min_warmup_time)
     ->RangeMultiplier(range_mult)

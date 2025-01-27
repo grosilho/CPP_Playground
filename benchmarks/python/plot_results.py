@@ -15,7 +15,7 @@ benchmarks = results["benchmarks"]
 data_len = 8
 slopes_end = data_len
 
-benchmark_name = "operator[]"
+benchmark_name = "set_operator"
 save_plots_to_disk = True
 show_plots = False
 output_file = Path(benchmarks_path / (benchmark_name + ".png"))
