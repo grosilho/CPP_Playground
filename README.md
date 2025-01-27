@@ -51,7 +51,7 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
   td {
     border: none;
     text-align: center;
-    vertical-align: top;
+    valign: top;
   }
   img {
     height: 150px;
