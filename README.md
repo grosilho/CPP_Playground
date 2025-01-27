@@ -59,15 +59,15 @@ In the following plots we denote: $A,B,C,D$ square matrices of size $N$; $s,r$ r
 </table>
 <table style="border-collapse: collapse; border: none">
   <tr>
-    <td style="vertical-align: top; text-align: center; border: none;">
+    <td valign="top", style="text-align: center; border: none;">
     <img src="./benchmarks/results/LU_factorization.png"/><br>
     <em>LU factorization of A.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
+    <td valign="top", style="text-align: center; border: none;">
     <img src="./benchmarks/results/mult_four_mat.png"/><br>
     <em>Matrices multiplication: A@B@C@D.</em>
     </td>
-    <td style="vertical-align: top; text-align: center; border: none;">
+    <td valign="top", style="text-align: center; border: none;">
     <img src="./benchmarks/results/long_op_1.png"/><br>
     <em>Perform element-wise:<br>E = A * (s + B) + (C - r * A) / f(D).</em>
     </td>
