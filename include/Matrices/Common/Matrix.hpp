@@ -164,7 +164,7 @@ namespace LinAlg::Matrices::Common
     Matrix<Cont>& Matrix<Cont>::apply_inplace(Func&& f)
     {
         std::function apply_f = [&f](Scalar& i) { i = f(i); };
-        std::ranges::for_each(this->m_data, apply_f);
+        std::for_each(this->m_data.begin(), this->m_data.end(), apply_f);
         return *this;
     }
 

@@ -30,10 +30,3 @@ endif()
 # Code formatting Check https://github.com/TheLartians/Format.cmake for usage Basically, it adds
 # targets to format and check the code
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
-
-# mdspan
-CPMAddPackage(
-  NAME mdspan
-  GITHUB_REPOSITORY kokkos/mdspan
-  GIT_TAG mdspan-0.6.0
-)
