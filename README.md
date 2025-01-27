@@ -118,18 +118,18 @@ From the plots, we observe the following:
 
 Of course, this is a small linear algebra library with limited functionalities and we performed tests on dense squared matrices of size $N$ at most 8192. Extending the library and the benchmarks may change the results.
 
----
 
-# Running the Code
+#
+### Running the Code
 
-## Running tests
+**Running tests:**
 Test are run by executing:
 ```
 cd tests && cmake --workflow --preset Debug
 ```
 This will compile the library and run the tests.
 
-## Running benchmarks
+**Running benchmarks:**
 Benchmarks are run by executing:
 ```
 cd benchmarks && ./scripts/benchmark.sh
@@ -137,7 +137,7 @@ cd benchmarks && ./scripts/benchmark.sh
 This will compile the library, run the benchmarks and generate plots in `benchmarks/results`.
 
 
-## Use in another project
+**Use in another project:**
 Run
 ```
 cmake -S . -B build && cmake --install build --prefix install_dir
